@@ -39,8 +39,6 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
         Toast.makeText(this, "请求成功", Toast.LENGTH_SHORT).show();
         List<Gank.Result> results = data.getResults();
         tv1.setText(results.get(new Random().nextInt(10)).toString());
-
-
     }
 
     @Override
