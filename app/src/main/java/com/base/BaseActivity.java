@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.base.util.LogUtils;
 
 /**
+ *
  * Created by chenbaolin on 2017/4/4.
  */
 
@@ -16,7 +17,7 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(getLayoutId());
+        setContentView(setLayoutResouceId());
         LogUtils.i("BaseActivity.onCreate");
         if (onCreatePresenter() != null) {
             mPresenter = onCreatePresenter();
@@ -34,7 +35,7 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
         }
     }
 
-    public abstract int getLayoutId();
+    public abstract int setLayoutResouceId();
 
     public abstract void initView();
 
