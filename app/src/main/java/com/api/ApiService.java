@@ -1,10 +1,14 @@
 package com.api;
 
+import com.C;
+import com.entity.LoginResult;
 import com.model.Gank;
 
 import io.reactivex.Flowable;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 /**
  * Created by chenbaolin on 2017/4/5.
@@ -12,10 +16,19 @@ import retrofit2.http.Path;
 
 public interface ApiService {
 
-//    @GET("data/{gank}/10/{page}")
-//    Observable<Gank> getGankData(@Path("gank") String gank,
-//                                                   @Path("page") int page);
+    //    @GET("data/{gank}/10/{page}")
+    //    Observable<Gank> getGankData(@Path("gank") String gank,
+    //                                                   @Path("page") int page);
     @GET("data/Android/10/{page}")
     Flowable<Gank> getGankData(@Path("page") String page);
 
+    @POST(C.ApiInterface.LOGIN_REGISTER)
+    Flowable<LoginResult> login(@Query("userPhone") String userPhone,
+                                @Query("time") String timestamp,
+                                @Query("appkeyId") String appkeyId,
+                                @Query("deviceToken") String deviceToken,
+                                @Query("ip") String ip,
+                                @Query("source") String source,
+                                @Query("verificationResponseCode") String code,
+                                @Query("additional") String additional);
 }

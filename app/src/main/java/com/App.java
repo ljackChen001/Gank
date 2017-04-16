@@ -86,8 +86,10 @@ public class App extends Application {
      * @return
      */
     public Activity getCurActivity() {
+
         return store.lastElement();
     }
+
 
     /**
      * Bugly崩溃收集初始化
@@ -101,8 +103,6 @@ public class App extends Application {
      */
     private void initLeakCanary() {
         if (LeakCanary.isInAnalyzerProcess(this)) {
-            // This process is dedicated to LeakCanary for heap analysis.
-            // You should not init your app in this process.
             return;
         }
         LeakCanary.install(this);

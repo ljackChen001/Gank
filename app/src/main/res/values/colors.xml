@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimary">#48b54c</color>
+    <color name="colorPrimaryDark">#48b54c</color>
     <color name="colorAccent">#FF4081</color>
 
 
@@ -10,7 +10,41 @@
     <color name="color2">#FF6347</color>
     <color name="color3">#B23AEE</color>
     <color name="color4">#00B2EE</color>
+    <color name="color_line">#EFEFEF</color>
+    <color name="color_ffffff">#FFFFFF</color>
 
+    <!-- 背景颜色 -->
+    <color name="color_48b54c">#48b54c</color>
+    <color name="transparent_20">#33000000</color>
+    <color name="main_background">#F7F7F7</color>
+    <color name="home_bacgroud">#eeeeee</color>
+    <color name="home_buttom_bacgroud">#F6F6F6</color>
+    <color name="wallet_buttom_bacgroud">#FCFCFC</color>
+    <color name="yerrow_f_back">#F8CC45</color>
 
+    <!-- 按钮颜色 -->
+    <color name="button_blue">#418ff8</color>
+    <color name="home_btn_time">#6D5533</color>
+    <color name="edit_back_line">#e4e5e8</color>
+    <color name="exit_btn">#EE5907</color>
+    <color name="btn_hui">#CCCCCC</color>
+    <!-- 字体颜色 -->
+    <color name="black">#000000</color>
+    <color name="red_color">#FB5248</color>
+    <color name="hui_color">#F9F9F9</color>
+    <color name="main_title_wrod_color">#333333</color>
+    <color name="hui_wrod_color">#666666</color>
+    <color name="hui_wrod_color1">#999999</color>
+    <color name="price_wrod_color">#FB3E30</color>
+    <color name="homw_wrod_color1">#FF635B</color>
+    <color name="home_wrod_color2">#FF8301</color>
+    <color name="home_wrod_color3">#5D97FF</color>
+    <color name="home_wrod_color4">#C37CFF</color>
+    <color name="home_wrod_color5">#5CAB30</color>
+    <color name="liji_wrod_color">#0E75EA</color>
+    <color name="liji_wrod_color1">#FB3C30</color>
+    <color name="jia_wrod_color1">#492b00</color>
+    <color name="home_day_color">#F6911F</color>
+    <color name="bgColor_overlay">#60000000</color>
 
 </resources>

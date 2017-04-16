@@ -1,6 +1,6 @@
 package com.ui;
 
-import com.api.Api;
+import com.api.RetrofitUtil;
 import com.base.helper.RxSchedulers;
 import com.model.Gank;
 
@@ -12,12 +12,12 @@ import io.reactivex.Flowable;
 public class MainModel implements MainContract.Model {
 //    @Override
 //    public Flowable<Gank> getGankData() {
-//        return Api.getInstance().getApiService().getGankData("1").compose(RxSchedulers.<Gank>io_main());
+//        return RetrofitUtil.getInstance().getApiService().getGankData("1").compose(RxSchedulers.<Gank>io_main());
 //    }
 
     @Override
     public Flowable<Gank> getGankData() {
-        return Api.getInstance().getApiService()
+        return RetrofitUtil.getInstance().getApiService()
                 .getGankData("1")
                 .compose(RxSchedulers.io_main());
     }

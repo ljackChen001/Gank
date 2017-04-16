@@ -2,6 +2,7 @@ package com.base.util;
 
 /**
  * Created by chenbaolin on 2017/4/7.
+ * 反射
  */
 
 public class CommUtils {

@@ -5,6 +5,4 @@ package com.base;
  */
 
 public interface BaseModel {
-//    String _id();
-
 }

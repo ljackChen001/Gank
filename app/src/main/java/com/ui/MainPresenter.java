@@ -1,6 +1,6 @@
 package com.ui;
 
-import com.api.Api;
+import com.api.RetrofitUtil;
 import com.base.util.LogUtils;
 import com.model.Gank;
 
@@ -37,6 +37,6 @@ public class MainPresenter extends MainContract.Presenter {
             }
         };
         //订阅并把返回值添加到CompositeDisposable
-        addSubscription(Api.getInstance().startObservable(mModel.getGankData(),resourceSubscriber));
+        addSubscription(RetrofitUtil.getInstance().startObservable(mModel.getGankData(),resourceSubscriber));
     }
 }

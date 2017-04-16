@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/drawer_login_layout"
+                android:layout_width="@dimen/drawer_width"
+                android:layout_height="@dimen/drawer_header_height"
+                android:background="@color/color_48b54c"
+                android:orientation="horizontal">
+
+    <com.view.widget.CircleImageView
+        android:id="@+id/drawer_menu_login_icon"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp"
+        android:paddingTop="@dimen/nav_header_vertical_spacing"
+        app:civ_border_color="@color/color_ffffff"
+        app:civ_border_width="2dp"
+        app:srcCompat="@drawable/header"/>
+
+    <TextView
+        android:id="@+id/drawer_menu_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/drawer_menu_login_icon"
+        android:layout_marginStart="30dp"
+        android:layout_toEndOf="@+id/drawer_menu_login_icon"
+        android:text="@string/drawer_menu_login"
+        android:textColor="@color/color_ffffff"
+        android:textSize="@dimen/font_size_16"/>
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/drawer_menu_login"
+        android:layout_marginStart="5dp"
+        android:layout_toEndOf="@+id/drawer_menu_login"
+        android:src="@drawable/ic_right_arrow"/>
+</RelativeLayout>

@@ -9,6 +9,31 @@ import java.util.List;
 
 public class Gank {
     private boolean error;
+private String name;
+private String age;
+
+    public Gank(String name, String age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Gank setName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public String getAge() {
+        return age;
+    }
+
+    public Gank setAge(String age) {
+        this.age = age;
+        return this;
+    }
 
     /**
      * _id : 58006bb3421aa95dd351b12a
@@ -40,6 +65,7 @@ public class Gank {
     public void setResults(List<Result> results) {
         this.results = results;
     }
+
 
     public static class Result {
 
