@@ -12,6 +12,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +22,7 @@ import com.base.helper.RxBus;
 import com.base.util.ActivityCollector;
 import com.base.util.StatusBarUtil;
 import com.model.Gank;
+import com.ui.component.cityselect.PickCityActivity;
 import com.ui.gank.R;
 import com.ui.login.LoginActivity;
 import com.view.widget.GlideImageLoader;
@@ -50,6 +52,8 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
     ImageView toolRight;
     @BindView(R.id.banner)
     Banner banner;
+    @BindView(R.id.city_select_layout)
+    LinearLayout citySelectLayout;
     private long exitTime = 0;
 
     @Override
@@ -65,13 +69,14 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
         initAppBarTool();
         initDrawer();
         initBanner();
+        citySelectLayout.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), PickCityActivity.class)));
     }
 
     /**
      * 初始化轮播图
      */
     private void initBanner() {
-        List<String> images=new ArrayList<>();
+        List<String> images = new ArrayList<>();
         images.add("http://img.hb.aicdn.com/0598d3964e1c2842acc90786799237d2a4050d562190a-7e1Fzr_fw658");
         images.add("http://img.hb.aicdn.com/82e6c5de2168ea6d18992e691fd0bef35d6622281bd83-7pUbfV_fw658");
         images.add("http://img.hb.aicdn.com/81009d16f8076fb33b6688d4a8a4aab50f16f9f51ed8e-9hEdSM_fw658");
@@ -172,7 +177,6 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
     public void onSucceed(Gank data) {
         Toast.makeText(this, "请求成功", Toast.LENGTH_SHORT).show();
         List<Gank.Result> results = data.getResults();
-        //        tv1.setText(results.get(new Random().nextInt(10)).toString());
     }
 
     @Override
@@ -198,7 +202,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
                 Snackbar.make(rootlayout, "再按一次退出程序", 2000).show();
                 exitTime = System.currentTimeMillis();
             } else {
-                ActivityCollector.finishAllActivity();
+                ActivityCollector.getInstance().AppExit(this);
             }
             return true;
         }

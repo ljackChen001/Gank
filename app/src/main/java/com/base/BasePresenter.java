@@ -6,11 +6,13 @@ import io.reactivex.disposables.Disposable;
 
 /**
  * Created by chenbaolin on 2017/4/3.
+ * V <====> P <====> M
  */
 
 public abstract class BasePresenter<V extends BaseView, M extends BaseModel> {
     protected V mView;
     protected M mModel;
+    //对RxJava进行管理
     private CompositeDisposable mCompositeDisposable;
 
     //加入到订阅列表
@@ -28,13 +30,13 @@ public abstract class BasePresenter<V extends BaseView, M extends BaseModel> {
         }
     }
 
-    //取消所有的订阅
+    //取消所有的订阅防止内存泄漏
     protected void unSubscribe() {
         if (null != mView) {
             mView = null;
         }
-        if (mCompositeDisposable != null) {
-            this.mCompositeDisposable.clear();
+        if (mCompositeDisposable != null && mCompositeDisposable.isDisposed()) {
+            mCompositeDisposable.clear();
         }
     }
 

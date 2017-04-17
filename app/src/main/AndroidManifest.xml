@@ -16,9 +16,9 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:theme="@style/AppTheme.NoActionBar"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme.NoActionBar">>
+        android:supportsRtl="true">
         <activity
             android:name="com.ui.MainActivity"
             android:label="@string/app_name"
@@ -31,7 +31,9 @@
             </intent-filter>
         </activity>
         <activity android:name="com.ui.login.LoginActivity"/>
-        <activity android:name="com.ui.login.Main2Activity">
+        <activity android:name="com.ui.component.cityselect.PickCityActivity">
+        </activity>
+        <activity android:name="com.base.util.Main2Activity">
         </activity>
     </application>
 

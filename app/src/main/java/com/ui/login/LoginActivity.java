@@ -1,6 +1,5 @@
 package com.ui.login;
 
-import android.support.design.widget.Snackbar;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
@@ -38,41 +37,26 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
     }
 
     @Override
-    public String getUsername() {
-        return null;
-    }
-
-    @Override
-    public String getPassword() {
-        return null;
-    }
-
-    @Override
-    public void showSuccessMsg(String s) {
-        Snackbar.make(layout, s, Snackbar.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void showFailedMsg(String s) {
-
-    }
-
-    @Override
-    public void clearEditText() {
-
-    }
-
-    @Override
     public void onSucceed(LoginResult data) {
-        LoginResult.ResponseDataEntity.AppUserEntity results=data.getResponseData().getAppUser();
+        LoginResult.ResponseDataEntity.AppUserEntity results = data.getResponseData().getAppUser();
         if (data != null) {
-            LogUtils.d(results.getUserType()+"");
+            LogUtils.d(results.getUserType() + "");
             LogUtils.d("getResults：：" + data.getResponseData().getTokenStr());
         }
     }
 
     @Override
     public void onFail(String err) {
+
+    }
+
+    @Override
+    public void showDialog() {
+
+    }
+
+    @Override
+    public void hideDialog() {
 
     }
 }

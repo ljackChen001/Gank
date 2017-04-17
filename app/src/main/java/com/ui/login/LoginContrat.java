@@ -15,26 +15,10 @@ public interface LoginContrat {
 
     interface View extends BaseView {
 
-        //得到用户填写的信息
-        String getUsername();
-
-        String getPassword();
-
-
-        //登录成功或失败后，返回信息的方法
-        void showSuccessMsg(String s);
-
-        void showFailedMsg(String s);
-
-        //清楚数据
-        void clearEditText();
-
-        //        void showDialog();
         void onSucceed(LoginResult data);
 
         void onFail(String err);
 
-        //        void hideDialog();
 
     }
 

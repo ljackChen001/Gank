@@ -3,7 +3,6 @@ package com.base;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Window;
 
 import com.base.helper.RxBus;
 import com.base.util.ActivityCollector;
@@ -26,12 +25,11 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         LogUtils.d("BaseActivity-->>", getClass().getSimpleName());
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         ActivityCollector.getInstance().addActivity(this);
         setContentView(setLayoutResouceId());
+        unbinder = ButterKnife.bind(this);
         StatusBarUtil.setColor(this, getResources().getColor(R.color.color_48b54c), 0);
-        unbinder=ButterKnife.bind(this);
         if (onCreatePresenter() != null) {
             mPresenter = onCreatePresenter();
         }
@@ -44,8 +42,8 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
         super.onDestroy();
         if (mPresenter != null) {
             mPresenter.unSubscribe();
-            unbinder.unbind();
         }
+        unbinder.unbind();
         ActivityCollector.getInstance().finishActivity();
     }
 

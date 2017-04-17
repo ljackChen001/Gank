@@ -11,6 +11,7 @@ import io.reactivex.subscribers.ResourceSubscriber;
 
 /**
  * Created by chenbaolin on 2017/4/16.
+ * 连接类
  */
 
 public class LoginPresenter extends LoginContrat.Presenter {

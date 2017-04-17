@@ -1,0 +1,60 @@
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_ffffff"
+    android:layout_marginTop="2dp"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.ui.component.cityselect.PickCityActivity"
+    tools:ignore="GradleDependency">
+
+    <android.support.v7.widget.SearchView
+        android:id="@+id/searchview"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="#f3f3f3"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:textColor="#757575"
+        app:iconifiedByDefault="false"
+        app:queryBackground="@null"
+        app:queryHint="请输入关键字"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="42dp"
+        app:layout_constraintTop_toBottomOf="@+id/searchview">
+
+        <me.yokeyword.indexablerv.IndexableLayout
+            android:id="@+id/indexableLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:indexBar_background="#08000000"
+            app:indexBar_layout_width="24dp"
+            app:indexBar_textColor="@android:color/black"
+            app:indexBar_textSpace="8dp"/>
+
+        <fragment
+            android:id="@+id/search_fragment"
+            class="com.ui.component.cityselect.SearchFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout="@layout/fragment_search_city"/>
+
+        <FrameLayout
+            android:id="@+id/progress"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white">
+
+            <ProgressBar
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_gravity="center"/>
+        </FrameLayout>
+
+    </FrameLayout>
+</android.support.constraint.ConstraintLayout>
