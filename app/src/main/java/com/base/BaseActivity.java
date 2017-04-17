@@ -28,7 +28,7 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
         LogUtils.d("BaseActivity-->>", getClass().getSimpleName());
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
-        ActivityCollector.addActivity(this);
+        ActivityCollector.getInstance().addActivity(this);
         setContentView(setLayoutResouceId());
         StatusBarUtil.setColor(this, getResources().getColor(R.color.color_48b54c), 0);
         unbinder=ButterKnife.bind(this);
@@ -46,7 +46,7 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
             mPresenter.unSubscribe();
             unbinder.unbind();
         }
-
+        ActivityCollector.getInstance().finishActivity();
     }
 
     public abstract int setLayoutResouceId();
