@@ -102,7 +102,7 @@ public class RxBus {
     /**
      * 退出应用时，清空资源
      */
-    public void release() {
+    public void clear() {
         tags.clear();
         bus = null;
     }

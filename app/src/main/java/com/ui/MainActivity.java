@@ -1,5 +1,6 @@
 package com.ui;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -14,15 +15,17 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.adapter.DrawerAdapter;
 import com.base.BaseActivity;
 import com.base.helper.RxBus;
 import com.base.util.ActivityCollector;
 import com.base.util.StatusBarUtil;
+import com.base.util.TimeUtils;
+import com.base.util.ToastUtil;
 import com.model.Gank;
 import com.ui.component.cityselect.PickCityActivity;
+import com.ui.component.wheelview.DateSelectWheel;
 import com.ui.gank.R;
 import com.ui.login.LoginActivity;
 import com.view.widget.GlideImageLoader;
@@ -54,7 +57,24 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
     Banner banner;
     @BindView(R.id.city_select_layout)
     LinearLayout citySelectLayout;
+    @BindView(R.id.layout_getcar_time)
+    LinearLayout layoutGetcarTime;
+    @BindView(R.id.tv_month)
+    TextView tvMonth;
+    @BindView(R.id.tv_week)
+    TextView tvWeek;
+    @BindView(R.id.tv_day)
+    TextView tvDay;
+    @BindView(R.id.tv_month_return)
+    TextView tvMonthReturn;
+    @BindView(R.id.tv_week_return)
+    TextView tvWeekReturn;
+    @BindView(R.id.layout_return_car)
+    LinearLayout layoutReturnCar;
     private long exitTime = 0;
+    public static final int DEFAULT_TIME = 24 * 60 * 60 * 1000;
+    private long systime;
+    private long thecaralsoTime;
 
     @Override
     public int setLayoutResouceId() {
@@ -69,7 +89,76 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
         initAppBarTool();
         initDrawer();
         initBanner();
+        initTime();
         citySelectLayout.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), PickCityActivity.class)));
+    }
+
+    private void initTime() {
+
+        systime = System.currentTimeMillis();
+        thecaralsoTime = systime + DEFAULT_TIME;
+        layoutGetcarTime.setOnClickListener(v -> getCarTime());
+        layoutReturnCar.setOnClickListener(v -> returnCarTime());
+    }
+
+    @SuppressLint("SetTextI18n")
+    public void getCarTime() {
+        new DateSelectWheel(mContext, 1).setCallBack(params -> {
+            String str1 = params[0];//月日
+            String str2 = params[1];//周几
+            String str3 = params[2];//时
+            String str4 = params[3];//分
+            String strQutime = TimeUtils.getNowYear() + "-" + str1;
+            long lonQutine = TimeUtils.getStringToDate(strQutime) + DEFAULT_TIME;
+            tvMonthReturn.setText(TimeUtils.getMonthDay(lonQutine));
+            tvWeekReturn.setText(TimeUtils.getWeekString(lonQutine) + TimeUtils.getNowFen());
+            tvDay.setText("1");
+            String QuTime = str3 + ":" + str4;
+            long LongQuTime = TimeUtils.getHHmm(QuTime);
+            long sysoutTime = TimeUtils.getHHmm(TimeUtils.getNowFen());
+            if (LongQuTime - sysoutTime < 120 * 60 * 1000) {
+                tvMonth.setText(TimeUtils.getMonthDay(systime));
+                long time = TimeUtils.getHHmm(TimeUtils.getNowFen()) + 120 * 60 * 1000;
+                tvWeek.setText(TimeUtils.getWeekString(systime) + TimeUtils.getStringHHmm(time));
+                ToastUtil.show("取车时间应大于当前2小时");
+            } else {
+                tvMonth.setText(str1);
+                tvWeek.setText(str2 + str3 + ":" + str4);
+                returnCarTime();
+            }
+        });
+    }
+
+    @SuppressLint("SetTextI18n")
+    public void returnCarTime() {
+        new DateSelectWheel(mContext, 2).setCallBack(params -> {
+            String str1 = params[0];//月日
+            String str2 = params[1];//周几
+            String str3 = params[2];//时
+            String str4 = params[3];//分
+            String mTextquday = tvMonth.getText().toString();
+            String QuTime1 = tvWeek.getText().toString().substring(2);
+            long LongQuTime1 = TimeUtils.getStringToDateTime(TimeUtils.getNowYear() + "-" +
+                    mTextquday + " " + QuTime1);
+            long huanTime = TimeUtils.getStringToDateTime(TimeUtils.getNowYear() + "-" + str1 + " " +
+                    "" + str3 + ":" + str4);
+            String quday = mTextquday.substring(3);
+            String huanday = str1.substring(3);
+            if (huanTime - LongQuTime1 < 24 * 60 * 60 * 1000) {
+                ToastUtil.show("还车时间应大于取车时间24小时!");
+            } else {
+                if (huanTime - LongQuTime1 > 20 * 24 * 60 * 60 * 1000) {
+                    ToastUtil.show("还车时间不能超过20天");
+                } else {
+                    tvDay.setText((Integer.parseInt(huanday) - Integer.parseInt(quday)) + "");
+                    tvMonthReturn.setText(str1);
+                    tvWeekReturn.setText(str2 + str3 + ":" + str4);
+
+                }
+
+
+            }
+        });
     }
 
     /**
@@ -175,8 +264,6 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
 
     @Override
     public void onSucceed(Gank data) {
-        Toast.makeText(this, "请求成功", Toast.LENGTH_SHORT).show();
-        List<Gank.Result> results = data.getResults();
     }
 
     @Override
@@ -187,11 +274,6 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
     public void hideDialog() {
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        rxBus.release();
-    }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -220,4 +302,11 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
         super.onStop();
         banner.stopAutoPlay();
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        rxBus.clear();
+    }
+
 }

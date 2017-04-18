@@ -4,13 +4,14 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
 
+import com.base.util.ActivityCollector;
+import com.base.util.LogUtils;
 import com.base.util.SpUtil;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 import com.tencent.bugly.crashreport.CrashReport;
 
 import java.util.HashMap;
-import java.util.Stack;
 
 import io.realm.Realm;
 
@@ -20,7 +21,6 @@ import io.realm.Realm;
 
 public class App extends Application {
     private static App mApp;
-    public Stack<Activity> store;
     public HashMap<String, Object> mCurActivityExtra;
     private RefWatcher mRefWatcher;
 
@@ -31,7 +31,7 @@ public class App extends Application {
         SpUtil.init(this);
         //        AppCompatDelegate.setDefaultNightMode(SpUtil.isNight() ? AppCompatDelegate.MODE_NIGHT_YES :
         // AppCompatDelegate.MODE_NIGHT_NO);
-        store = new Stack<>();
+        LogUtils.setDebug(true);
         registerActivityLifecycleCallbacks(new SwitchBackgroundCallbacks());
         initBugly();
         initLeakCanary();
@@ -46,7 +46,7 @@ public class App extends Application {
 
         @Override
         public void onActivityCreated(Activity activity, Bundle bundle) {
-            store.add(activity);
+            ActivityCollector.getInstance().addActivity(activity);
         }
 
         @Override
@@ -76,7 +76,7 @@ public class App extends Application {
 
         @Override
         public void onActivityDestroyed(Activity activity) {
-            store.remove(activity);
+            ActivityCollector.getInstance().finishActivity(activity);
         }
     }
 
@@ -87,7 +87,7 @@ public class App extends Application {
      */
     public Activity getCurActivity() {
 
-        return store.lastElement();
+        return ActivityCollector.getInstance().currentActivity();
     }
 
 

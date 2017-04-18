@@ -5,7 +5,8 @@ import android.util.LruCache;
 /**
  * Created by baixiaokang on 16/9/20.
  */
-public class MemoryCacheManager {
+public class
+MemoryCacheManager {
     private static class Holder {
         public static final MemoryCacheManager instance = new MemoryCacheManager();
     }
