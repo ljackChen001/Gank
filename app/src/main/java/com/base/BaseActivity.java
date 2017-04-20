@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.base.helper.RxBus;
-import com.base.util.ActivityCollector;
 import com.base.util.LogUtils;
 import com.base.util.StatusBarUtil;
 import com.ui.gank.R;
@@ -30,7 +29,6 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
         LogUtils.d("BaseActivity-->>", getClass().getSimpleName());
         super.onCreate(savedInstanceState);
         mContext=this;
-        ActivityCollector.getInstance().addActivity(this);
         View rootView = getLayoutInflater().inflate(this.setLayoutResouceId(), null, false);
         setContentView(setLayoutResouceId(), rootView);
         unbinder = ButterKnife.bind(this);
@@ -49,7 +47,6 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
             mPresenter.unSubscribe();
         }
         unbinder.unbind();
-        ActivityCollector.getInstance().finishActivity();
     }
 
 

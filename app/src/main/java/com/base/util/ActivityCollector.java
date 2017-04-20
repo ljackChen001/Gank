@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 
-import com.api.RetrofitUtil;
-
 import java.util.Stack;
 
 /**
@@ -13,7 +11,7 @@ import java.util.Stack;
  */
 
 public class ActivityCollector {
-    private static Stack<Activity> activityStack;
+    public  static Stack<Activity> activityStack;
     private static ActivityCollector activityCollector;
 
     private ActivityCollector() {
@@ -22,7 +20,7 @@ public class ActivityCollector {
     //获取单例
     public static ActivityCollector getInstance() {
         if (activityCollector == null) {
-            synchronized (RetrofitUtil.class) {
+            synchronized (ActivityCollector.class) {
                 if (activityCollector == null) {
                     activityCollector = new ActivityCollector();
                 }
@@ -37,7 +35,7 @@ public class ActivityCollector {
      */
     public void addActivity(Activity activity) {
         if (activityStack == null) {
-            activityStack = new Stack<Activity>();
+            activityStack = new Stack<>();
         }
         activityStack.add(activity);
     }
@@ -45,9 +43,8 @@ public class ActivityCollector {
     /**
      * 获取当前Activity（堆栈中最后一个压入的）
      */
-    public Activity currentActivity() {
-        Activity activity = activityStack.lastElement();
-        return activity;
+    public Activity getCurrentActivity() {
+        return activityStack.lastElement();
     }
 
     /**
@@ -57,7 +54,6 @@ public class ActivityCollector {
         Activity activity = activityStack.lastElement();
         if (activity != null) {
             activity.finish();
-            activity = null;
         }
     }
 
@@ -68,7 +64,6 @@ public class ActivityCollector {
         if (activity != null) {
             activityStack.remove(activity);
             activity.finish();
-            activity = null;
         }
     }
 
@@ -87,9 +82,9 @@ public class ActivityCollector {
      * 结束所有Activity
      */
     public void finishAllActivity() {
-        for (int i = 0, size = activityStack.size(); i < size; i++) {
-            if (null != activityStack.get(i)) {
-                activityStack.get(i).finish();
+        for (Activity activity : activityStack) {
+            if (activity != null) {
+                activity.finish();
             }
         }
         activityStack.clear();
@@ -101,10 +96,12 @@ public class ActivityCollector {
     public void AppExit(Context context) {
         try {
             finishAllActivity();
-            ActivityManager activityMgr = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-            activityMgr.restartPackage(context.getPackageName());
             System.exit(0);
+            ActivityManager manager = (ActivityManager) context
+                    .getSystemService(Context.ACTIVITY_SERVICE);
+            manager.killBackgroundProcesses(context.getPackageName());
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

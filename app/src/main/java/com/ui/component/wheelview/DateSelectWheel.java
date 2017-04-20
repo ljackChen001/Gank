@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import com.base.util.LogUtils;
 import com.base.util.TimeUtils;
 import com.ui.gank.R;
 
@@ -51,17 +52,17 @@ public class DateSelectWheel extends Dialog implements WheelView.OnWheelChangedL
         hour.setBackgroundResource(Color.TRANSPARENT);
         min.setBackgroundResource(Color.TRANSPARENT);
         initData();
-        day.setAdapter(new ArrayWheelAdapter<String>(days));
+        day.setAdapter(new ArrayWheelAdapter<>(days));
         day.setVisibleItems(3);
         day.setCyclic(false);
         day.setCurrentItem(0);
 
-        hour.setAdapter(new ArrayWheelAdapter<String>(hours));
+        hour.setAdapter(new ArrayWheelAdapter<>(hours));
         hour.setVisibleItems(3);
         hour.setCyclic(false);
         hour.setCurrentItem(0);
 
-        min.setAdapter(new ArrayWheelAdapter<String>(mins));
+        min.setAdapter(new ArrayWheelAdapter<>(mins));
         min.setVisibleItems(3);
         min.setCyclic(false);
         min.setCurrentItem(0);
@@ -78,6 +79,7 @@ public class DateSelectWheel extends Dialog implements WheelView.OnWheelChangedL
         lay.width = getContext().getResources().getDisplayMetrics().widthPixels;
     }
 
+    @SuppressLint("WrongConstant")
     private void setCurrentSelect() {
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int min = calendar.get(Calendar.MINUTE);
@@ -115,15 +117,23 @@ public class DateSelectWheel extends Dialog implements WheelView.OnWheelChangedL
         super.show();
     }
 
+    @SuppressLint("WrongConstant")
     private void initData() {
+        //        int curMonth = calendar.get(Calendar.MONTH) + 1;//通过Calendar算出的月数要+1
         int curYear = calendar.get(Calendar.YEAR);
-        @SuppressLint("WrongConstant") int curMonth = calendar.get(Calendar.MONTH) + 1;//通过Calendar算出的月数要+1
-        int moth = getDay(curYear, curMonth);
-        days = new String[moth];
-        for (int i = 0; i < moth; i++) {
-            long time = TimeUtils.getStringToDate(curYear + "-" + curMonth + "-" + (i + 1));
-            days[i] = curMonth + "月" + (i + 1) + "日" + TimeUtils.getWeekString(time);
+        for (int i = 1; i <13; i++) {
+
+            int moth = getDay(curYear, i);
+            LogUtils.d(moth+"天");
+            days = new String[moth];
+            for (int j = 0; j < moth; j++) {
+                long time = TimeUtils.getStringToDate(curYear + "-" + i + "-" + (j + 1));
+                days[j] = i + "月" + (j + 1) + "日" + TimeUtils.getWeekString(time);
+                LogUtils.d(days[j].toString());
+            }
+            LogUtils.d(curYear + ":::" + i + ":::" + moth);
         }
+
         // 初始化小时
         hours = new String[24];
         for (int i = 0; i < 24; i++) {
@@ -163,6 +173,7 @@ public class DateSelectWheel extends Dialog implements WheelView.OnWheelChangedL
         }
     }
 
+    @SuppressLint("WrongConstant")
     private void setTime() {
         int curYear = calendar.get(Calendar.YEAR);
         @SuppressLint("WrongConstant") int curMonth = calendar.get(Calendar.MONTH) + 1;//通过Calendar算出的月数要+1

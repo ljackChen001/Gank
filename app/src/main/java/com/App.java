@@ -29,13 +29,12 @@ public class App extends Application {
         mApp = this;
         Realm.init(this);
         SpUtil.init(this);
-        //        AppCompatDelegate.setDefaultNightMode(SpUtil.isNight() ? AppCompatDelegate.MODE_NIGHT_YES :
-        // AppCompatDelegate.MODE_NIGHT_NO);
         LogUtils.setDebug(true);
         registerActivityLifecycleCallbacks(new SwitchBackgroundCallbacks());
         initBugly();
         initLeakCanary();
     }
+
 
     public static App getAppContext() {
         return mApp;
@@ -46,48 +45,48 @@ public class App extends Application {
 
         @Override
         public void onActivityCreated(Activity activity, Bundle bundle) {
+            LogUtils.e("====>>", activity + "onActivityCreated");
             ActivityCollector.getInstance().addActivity(activity);
         }
 
         @Override
         public void onActivityStarted(Activity activity) {
-
+            LogUtils.e("====>>", activity + "onActivityStarted");
         }
 
         @Override
         public void onActivityResumed(Activity activity) {
-
+            LogUtils.e("====>>", activity + "onActivityResumed");
         }
 
         @Override
         public void onActivityPaused(Activity activity) {
-
+            LogUtils.e("====>>", activity + "onActivityPaused");
         }
 
         @Override
         public void onActivityStopped(Activity activity) {
-
+            LogUtils.e("====>>", activity + "onActivityStopped");
         }
 
         @Override
         public void onActivitySaveInstanceState(Activity activity, Bundle bundle) {
-
+            LogUtils.e("====>>", activity + "onActivitySaveInstanceState");
         }
 
         @Override
         public void onActivityDestroyed(Activity activity) {
+            LogUtils.e("====>>", activity + "onActivityDestroyed");
             ActivityCollector.getInstance().finishActivity(activity);
+
+            StringBuilder builder = new StringBuilder();
+            builder.append("栈内剩余：");
+            for (int i = 0; i < ActivityCollector.activityStack.size(); i++) {
+                builder.append(ActivityCollector.activityStack.get(i).getClass().getSimpleName() + "    ");
+            }
+            LogUtils.e(builder.toString());
+
         }
-    }
-
-    /**
-     * 获取当前的Activity
-     *
-     * @return
-     */
-    public Activity getCurActivity() {
-
-        return ActivityCollector.getInstance().currentActivity();
     }
 
 
