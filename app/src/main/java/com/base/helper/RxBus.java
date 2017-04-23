@@ -88,11 +88,11 @@ public class RxBus {
 
     }
 
-    /**
-     * 移除tag
-     *
-     * @param tag
-     */
+        /**
+         * 移除tag
+         *
+         * @param tag
+         */
     public void removeObserverable(String tag) {
         if (tags.containsKey(tag)) {
             tags.remove(tag);

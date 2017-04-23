@@ -1,12 +1,21 @@
 package com.ui.login;
 
+import android.widget.Button;
+
 import com.App;
 import com.api.RetrofitUtil;
+import com.base.helper.RxSchedulers;
 import com.base.util.LogUtils;
 import com.base.util.MD5Util;
 import com.base.util.WiFiIpUtils;
+import com.entity.BaseResponse;
 import com.entity.LoginResult;
+import com.ui.gank.R;
 
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.subscribers.ResourceSubscriber;
 
 /**
@@ -26,20 +35,23 @@ public class LoginPresenter extends LoginContrat.Presenter {
 
     @Override
     public void login(String userPhone, String code) {
-        ResourceSubscriber resourceSubscriber = new ResourceSubscriber<LoginResult>() {
+        ResourceSubscriber resourceSubscriber = new ResourceSubscriber<BaseResponse<LoginResult>>() {
             @Override
-            public void onNext(LoginResult result) {
+            public void onNext(BaseResponse<LoginResult> result) {
                 LogUtils.d("result请求成功");
                 if (result != null) {
-                    LogUtils.d("有数据有数据有数据有数据有数据");
-                    mView.onSucceed(result);
-                } else {
-                    LogUtils.d("没 -----------有数据有数据有数据有数据有数据");
+                    if (result.getResponseCode() == 0) {
+                        mView.onSucceed(result);
+                    } else {
+                        mView.onFail("账号或密码错误,请重新输入！");
+                    }
                 }
             }
 
             @Override
             public void onError(Throwable t) {
+                LogUtils.d(t.getMessage());
+                LogUtils.d("网络连接失败");
                 mView.onFail(t.getMessage());
                 onComplete();
             }
@@ -49,16 +61,49 @@ public class LoginPresenter extends LoginContrat.Presenter {
                 this.dispose();
             }
         };
+        /**
+         * 登录和注册
+         */
         addSubscription(RetrofitUtil.getInstance().startObservable(
-                mModel.login(userPhone,
-                        timestamp,
-                        "1234",
-                        "",
-                        wifiip,
-                        "02",
-                        code,
-                        MD5Util.md5(userPhone + "al" + timestamp + "1234" + wifiip + code)
-                                .toUpperCase()),
+                mModel.login(userPhone, timestamp, "1234", "", wifiip, "02", code,
+                        MD5Util.md5(userPhone + "al" + timestamp + "1234" + wifiip + code).toUpperCase()),
                 resourceSubscriber));
+    }
+
+    @Override
+    public void sendeCode(String userPhone) {
+        Disposable disposable = mModel.sendCode(userPhone, 2 + "")
+                .subscribe(result -> {
+                    if (result != null && result.getResponseCode() == 20000) {
+                        LogUtils.d(result.getResponseDescription());
+                        mView.onSucceed(result);
+                    } else {
+                        mView.onFail("验证码获取失败！");
+                    }
+                });
+        addSubscription(disposable);
+    }
+
+    /**
+     * 点击获取验证码，10S倒计时，利用Rxjava进行线程切换
+     */
+    public void getSureCode(Button view) {
+        final long count = 60;
+        Disposable disposable = Observable.interval(0, 1, TimeUnit.SECONDS)
+                .compose(RxSchedulers.io_main_observable())
+                .take(count + 1)
+                .map(aLong -> count - aLong)
+                .doOnSubscribe(disposable1 -> {
+                    view.setEnabled(false);
+                    view.setBackgroundResource(R.drawable.gray_btn_normal);
+                }).subscribe(aLong -> {
+                    view.setText("剩余(" + aLong + ")秒");
+                    if (aLong == 0) {
+                        view.setEnabled(true);
+                        view.setText("获取验证码");
+                        view.setBackgroundResource(R.drawable.ripple_bg);
+                    }
+                });
+        addSubscription(disposable);
     }
 }

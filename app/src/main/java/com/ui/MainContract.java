@@ -16,7 +16,6 @@ public interface MainContract {
     interface View extends BaseView {
 
         void showDialog();
-
         void onSucceed(Gank data);
 
         void onFail(String err);
@@ -29,7 +28,7 @@ public interface MainContract {
         Flowable<Gank> getGankData();
     }
 
-    abstract class Presenter extends BasePresenter<View, Model> {
+    abstract class Presenter extends BasePresenter<BaseView, Model> {
         public abstract void getGankData();
     }
 }

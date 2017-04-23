@@ -14,15 +14,25 @@ public class UserInfo implements Serializable{
     private String userLastLogin;
     private String userLogin;
     private String userPassword;
-    private String userType;;
+    private String userType;
     private String userCreateTime;
     private String userAddress;
     private String userMobile;
-    private String  userImg;
+    private String userImg;
     private String userState;
-    private String  userTag;
+    private String userTag;
     private String userFinance;
     private String verificationCode;
+    private String deviceToken;
+
+    public String getDeviceToken() {
+        return deviceToken;
+    }
+
+    public UserInfo setDeviceToken(String deviceToken) {
+        this.deviceToken = deviceToken;
+        return this;
+    }
 
     public String getId() {
         return id;

@@ -23,7 +23,7 @@ public class MainPresenter extends MainContract.Presenter {
         ResourceSubscriber resourceSubscriber = new ResourceSubscriber<Gank>() {
             @Override
             public void onNext(Gank gank) {
-                mView.onSucceed(gank);
+//                mView.onSucceed(gank);
             }
 
             @Override

@@ -9,6 +9,8 @@ package com.base;
 public interface BaseView {
 
     void showDialog();
+
     void hideDialog();
+
 
 }

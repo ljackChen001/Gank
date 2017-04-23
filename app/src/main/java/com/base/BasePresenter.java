@@ -1,6 +1,10 @@
 package com.base;
 
 
+import com.entity.BaseResponse;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableTransformer;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
@@ -16,7 +20,7 @@ public abstract class BasePresenter<V extends BaseView, M extends BaseModel> {
     private CompositeDisposable mCompositeDisposable;
 
     //加入到订阅列表
-    protected void addSubscription(Disposable disposable) {
+    public void addSubscription(Disposable disposable) {
         if (disposable == null) return;
         if (mCompositeDisposable == null) {
             mCompositeDisposable = new CompositeDisposable();
@@ -39,6 +43,39 @@ public abstract class BasePresenter<V extends BaseView, M extends BaseModel> {
             mCompositeDisposable.clear();
         }
     }
+    /**
+     * Rx优雅处理服务器返回
+     *
+     * @param <T>
+     * @return
+     */
+    public <T> ObservableTransformer<BaseResponse<T>, T> handleResult() {
+        return upstream ->{
+            return upstream.flatMap(result -> {
+                        if (result.isSuccess()) {
+                            return createData(result.getResponseData());
+                        } else if (result.isTokenInvalid()) {
+                            //处理token失效，tokenInvalid方法在BaseActivity 实现
+//                            tokenInvalid();
+                        } else {
+                            return Observable.error(new Exception(result.getResponseDescription()));
+                        }
+                        return Observable.empty();
+                    }
 
+            );
+        };
+    }
+
+    private <T> Observable<T> createData(final T t) {
+        return Observable.create(subscriber -> {
+            try {
+                subscriber.onNext(t);
+                subscriber.onComplete();
+            } catch (Exception e) {
+                subscriber.onError(e);
+            }
+        });
+    }
 
 }

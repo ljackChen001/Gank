@@ -7,4 +7,5 @@ package com.base;
  */
 
 public interface BaseModel {
+
 }

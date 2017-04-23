@@ -33,5 +33,7 @@
     <string name="text_hotline">如需帮助可拨打阿拉租车免费热线电话:</string>
     <string name="text_hotline_1">4001-021-021</string>
     <string name="text_more_city">*更多城市陆续开通中,敬请期待!</string>
-
+    <string name="text_code">请输入您验证码</string>
+    <string name="text_phone">请输入手机号</string>
+    <string name="count">00 s</string>
 </resources>

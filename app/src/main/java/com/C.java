@@ -24,6 +24,8 @@ public class C {
 
     public static final class ApiInterface {
         public static final String LOGIN_REGISTER = "loginOrRegister";//登录接口
+        public static final String SEND_CODE = "sendCode";//获取验证码
+
     }
 
     //租车人订单状态 0-待付款；1-待取车；2-待还车；3-待退款；4-已退款；5-已完成；6-已取消，7-已评价；

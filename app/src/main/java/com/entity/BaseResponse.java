@@ -4,45 +4,33 @@ package com.entity;
  * Created by chenbaolin on 2017/1/11.
  */
 
-public class BaseResponse<T> {
-    private boolean success;//请求是否成功
-    private int resultCode;//状态吗
-    private String msg;//返回的提示消息
-    private T data;//泛型接收result
+public class BaseResponse<T>   {
+    private int responseCode;//状态吗
+    private String responseDescription;//返回的提示消息
+    private T responseData;//泛型接收result
+
+
+    public static String SUCCESS = "0";
+    public static String SIGN_OUT = "101";//token验证失败
+    public static String SHOWTOAST = "102";//显示Toast
 
     public boolean isSuccess() {
-        return success;
+        return SUCCESS.equals(responseCode);
     }
 
-    public BaseResponse setSuccess(boolean success) {
-        this.success = success;
-        return this;
+    public boolean isTokenInvalid() {
+        return SIGN_OUT.equals(responseCode);
     }
 
-    public int getResultCode() {
-        return resultCode;
+    public int getResponseCode() {
+        return responseCode;
     }
 
-    public BaseResponse setResultCode(int resultCode) {
-        this.resultCode = resultCode;
-        return this;
+    public String getResponseDescription() {
+        return responseDescription;
     }
 
-    public String getMsg() {
-        return msg;
-    }
-
-    public BaseResponse setMsg(String msg) {
-        this.msg = msg;
-        return this;
-    }
-
-    public T getData() {
-        return data;
-    }
-
-    public BaseResponse setData(T data) {
-        this.data = data;
-        return this;
+    public T getResponseData() {
+        return responseData;
     }
 }

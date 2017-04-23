@@ -25,9 +25,13 @@ public class ValidateUtils {
 
     }
 
+    public static boolean isPassword(String password) {
+        return password.length() == 6 || password.equals("1");
+    }
 
     /**
      * 泛型非空判断
+     *
      * @param t
      * @param <T>
      * @return
@@ -46,6 +50,7 @@ public class ValidateUtils {
 
     /**
      * 数组非空判断
+     *
      * @param arr
      * @param <T>
      * @return

@@ -22,6 +22,10 @@ public class SnackbarUtils {
 
     private static WeakReference<Snackbar> snackbarWeakReference;
 
+    public static void showSnacker(View view, CharSequence text) {
+       Snackbar.make(view,text,2000).show();
+    }
+
     /**
      * 显示短时snackbar
      *

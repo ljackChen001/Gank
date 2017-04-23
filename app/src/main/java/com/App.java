@@ -1,12 +1,14 @@
 package com;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 
 import com.base.util.ActivityCollector;
 import com.base.util.LogUtils;
-import com.base.util.SpUtil;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 import com.tencent.bugly.crashreport.CrashReport;
@@ -24,11 +26,11 @@ public class App extends Application {
     public HashMap<String, Object> mCurActivityExtra;
     private RefWatcher mRefWatcher;
 
+    @RequiresApi(api = Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     public void onCreate() {
         super.onCreate();
         mApp = this;
         Realm.init(this);
-        SpUtil.init(this);
         LogUtils.setDebug(true);
         registerActivityLifecycleCallbacks(new SwitchBackgroundCallbacks());
         initBugly();
@@ -41,6 +43,7 @@ public class App extends Application {
     }
 
 
+    @SuppressLint("NewApi")
     private class SwitchBackgroundCallbacks implements Application.ActivityLifecycleCallbacks {
 
         @Override

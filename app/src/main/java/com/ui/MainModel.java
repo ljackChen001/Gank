@@ -19,7 +19,7 @@ public class MainModel implements MainContract.Model {
     public Flowable<Gank> getGankData() {
         return RetrofitUtil.getInstance().getApiService()
                 .getGankData("1")
-                .compose(RxSchedulers.io_main());
+                .compose(RxSchedulers.io_main_flowable());
     }
 
 }
