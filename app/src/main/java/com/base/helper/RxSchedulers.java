@@ -14,6 +14,7 @@ import io.reactivex.schedulers.Schedulers;
 public class RxSchedulers {
     public static <T> FlowableTransformer<T, T> io_main_flowable() {
         return upstream -> upstream.subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnError(new RxException<>(Throwable::printStackTrace))
                 .onErrorResumeNext(Flowable.<T>empty());
@@ -21,6 +22,7 @@ public class RxSchedulers {
 
     public static <T> ObservableTransformer<T, T> io_main_observable() {
         return upstream -> upstream.subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnError(new RxException<>(Throwable::printStackTrace))
                 .onErrorResumeNext(Observable.<T>empty());

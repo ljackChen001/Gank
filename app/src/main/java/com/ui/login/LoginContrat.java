@@ -4,7 +4,6 @@ import com.base.BaseModel;
 import com.base.BasePresenter;
 import com.base.BaseView;
 import com.entity.BaseResponse;
-import com.entity.LoginResult;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -22,8 +21,8 @@ public interface LoginContrat {
     }
 
     interface Model extends BaseModel {
-        Flowable<BaseResponse<LoginResult>> login(String userPhone, String time, String appkeyId, String deviceToken,
-                                    String ip, String source, String verificationResponseCode, String additional);
+        Flowable login(String userPhone, String time, String appkeyId, String deviceToken,
+                       String ip, String source, String verificationResponseCode, String additional);
 
         Observable<BaseResponse> sendCode(String userPhone, String codeType);
     }

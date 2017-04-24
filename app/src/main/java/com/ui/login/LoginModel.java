@@ -2,8 +2,6 @@ package com.ui.login;
 
 import com.api.RetrofitUtil;
 import com.base.helper.RxSchedulers;
-import com.entity.BaseResponse;
-import com.entity.LoginResult;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -15,8 +13,9 @@ import io.reactivex.Observable;
 public class LoginModel implements LoginContrat.Model {
 
     @Override
-    public Flowable<BaseResponse<LoginResult>> login(String userPhone, String time, String appkeyId, String deviceToken, String ip, String
-            source, String verificationResponseCode, String additional) {
+    public Flowable login(String userPhone, String time, String appkeyId, String deviceToken,
+                          String ip,
+                          String source, String verificationResponseCode, String additional) {
         return RetrofitUtil.getInstance().getApiService()
                 .login(userPhone,
                         time,
@@ -30,7 +29,7 @@ public class LoginModel implements LoginContrat.Model {
     }
 
     @Override
-    public Observable<BaseResponse> sendCode(String userPhone, String codeType) {
+    public Observable sendCode(String userPhone, String codeType) {
         return RetrofitUtil.getInstance().getApiService()
                 .sendCode(userPhone, codeType)
                 .compose(RxSchedulers.io_main_observable());

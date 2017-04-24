@@ -81,6 +81,7 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
         RxView.clicks(btnLogin).throttleFirst(5, TimeUnit.SECONDS)
                 .subscribe(o -> {
                     mPresenter.login(etPhone.getText().toString(), etCode.getText().toString());
+                    ActivityCollector.getInstance().finishActivity();
                 });
     }
 
