@@ -1,8 +1,9 @@
 package com.api;
 
-import com.C;
-import com.entity.BaseResponse;
-import com.entity.LoginResult;
+import com.Constants;
+import com.entity.BaseRespnseData;
+import com.entity.HttpResult;
+import com.entity.UserInfo;
 import com.model.Gank;
 
 import io.reactivex.Flowable;
@@ -24,19 +25,19 @@ public interface ApiService {
     @GET("data/Android/10/{page}")
     Flowable<Gank> getGankData(@Path("page") String page);
 
-    @POST(C.ApiInterface.LOGIN_REGISTER)
-    Flowable<BaseResponse<LoginResult>> login(@Query("userPhone") String userPhone,
-                                              @Query("time") String timestamp,
-                                              @Query("appkeyId") String appkeyId,
-                                              @Query("deviceToken") String deviceToken,
-                                              @Query("ip") String ip,
-                                              @Query("source") String source,
-                                              @Query("verificationResponseCode") String code,
-                                              @Query("additional") String additional);
+    @POST(Constants.ApiInterface.LOGIN_REGISTER)
+    Flowable<HttpResult<BaseRespnseData<UserInfo>>> login(@Query("userPhone") String userPhone,
+                                                          @Query("time") String timestamp,
+                                                          @Query("appkeyId") String appkeyId,
+                                                          @Query("deviceToken") String deviceToken,
+                                                          @Query("ip") String ip,
+                                                          @Query("source") String source,
+                                                          @Query("verificationResponseCode") String code,
+                                                          @Query("additional") String additional);
 
-    @POST(C.ApiInterface.SEND_CODE)
-    Observable<BaseResponse> sendCode(@Query("phone") String userPhone,
-                                      @Query("codeType") String codeType);
+    @POST(Constants.ApiInterface.SEND_CODE)
+    Observable<HttpResult> sendCode(@Query("phone") String userPhone,
+                                    @Query("codeType") String codeType);
 
 
 }

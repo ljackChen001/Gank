@@ -1,7 +1,8 @@
 package com.api;
 
 import com.App;
-import com.C;
+import com.Constants;
+import com.base.helper.GsonConverterFactory;
 import com.base.util.LogUtils;
 import com.base.util.NetWorkUtil;
 import com.google.gson.Gson;
@@ -25,10 +26,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- *
  * Created by chenbaolin on 2017/4/5.
  */
 
@@ -59,10 +58,11 @@ public class RetrofitUtil {
             .addHeader("appkeyId", "1234")
             .addHeader("Content-Type", "application/json")
             .build());
+
     /**
      * 让所有网络请求都附上token
      */
-//    Interceptor mTokenInterceptor = chain -> {
+    //    Interceptor mTokenInterceptor = chain -> {
     //        Request originalRequest = chain.request();
     //        if (Your.sToken == null || alreadyHasAuthorizationHeader(originalRequest)) {
     //            return chain.proceed(originalRequest);
@@ -73,7 +73,7 @@ public class RetrofitUtil {
     //        return chain.proceed(authorised);
     //    };
     //静态内部类,保证单例并在调用getRetrofit方法的时候才去创建.
-    private  RetrofitUtil() {
+    private RetrofitUtil() {
         // 可以通过实现 Logger 接口更改日志保存位置
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -97,9 +97,10 @@ public class RetrofitUtil {
         //配置Retrofit
         retrofit = new Retrofit.Builder()
                 .client(okHttpClient)//把OkHttpClient添加进来
+                //.addConverterFactory(GsonConverterFactory.create(gson))
                 .addConverterFactory(GsonConverterFactory.create(gson))
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .baseUrl(C.BASE_URL)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
+                .baseUrl(Constants.BASE_URL)
                 .build();
         //        apiService = retrofit.create(retrofitUtilService.class);
     }

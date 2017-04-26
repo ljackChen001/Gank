@@ -36,4 +36,8 @@
     <string name="text_code">请输入您验证码</string>
     <string name="text_phone">请输入手机号</string>
     <string name="count">00 s</string>
+    <string name="server_internal_error">服务器异常</string>
+    <string name="cannot_connected_server">网络连接失败</string>
+
+
 </resources>

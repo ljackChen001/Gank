@@ -4,7 +4,7 @@ package com;
  * Created by chenbaolin on 2017/4/5.
  */
 
-public class C {
+public class Constants {
     public static final String BASE_URL = "http://www.girlboy.cn:1101/al/api/";
     //public static final String url = "http://10.143.132.203:1101/al/api/";
     //public static final String url = "http://10.143.132.133:8080/al/api/";
@@ -21,6 +21,8 @@ public class C {
     //	public static final String FILE_URL = "http://192.168.0.107:8080/al/";
     public static final String FILE_UPURL_MD = "http://www.girlboy.cn:1101/al/api/uploadFile";
     public static final String FILE_URL = "http://www.girlboy.cn:1101/al/";
+    public static final int WEB_RESP_CODE_SUCCESS = 0;
+    public static final int TOKEN_EXPRIED = -1;
 
     public static final class ApiInterface {
         public static final String LOGIN_REGISTER = "loginOrRegister";//登录接口

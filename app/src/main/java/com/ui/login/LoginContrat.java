@@ -3,8 +3,9 @@ package com.ui.login;
 import com.base.BaseModel;
 import com.base.BasePresenter;
 import com.base.BaseView;
-import com.entity.BaseResponse;
-import com.entity.LoginResult;
+import com.entity.BaseRespnseData;
+import com.entity.HttpResult;
+import com.entity.UserInfo;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -16,21 +17,18 @@ import io.reactivex.Observable;
 public interface LoginContrat {
 
     interface View extends BaseView {
-
         void onSucceed(Object result);
         void onFail(String err);
     }
-
     interface Model extends BaseModel {
-        Flowable<BaseResponse<LoginResult>> login(String userPhone, String time, String appkeyId, String deviceToken,
-                                    String ip, String source, String verificationResponseCode, String additional);
+        Flowable<HttpResult<BaseRespnseData<UserInfo>>> login(String userPhone, String time, String appkeyId, String deviceToken,
+                                                              String ip, String source, String verificationResponseCode, String additional);
 
-        Observable<BaseResponse> sendCode(String userPhone, String codeType);
+        Observable<HttpResult> sendCode(String userPhone, String codeType);
     }
 
     abstract class Presenter extends BasePresenter<LoginContrat.View, LoginContrat.Model> {
         public abstract void login(String userPhone, String code);
-
         public abstract void sendeCode(String userPhone);
     }
 }

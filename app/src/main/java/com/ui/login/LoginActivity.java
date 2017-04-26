@@ -1,6 +1,5 @@
 package com.ui.login;
 
-import android.annotation.SuppressLint;
 import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.widget.Button;
@@ -8,12 +7,11 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.base.BaseActivity;
-import com.base.util.ActivityCollector;
 import com.base.util.LogUtils;
 import com.base.util.NetWorkUtil;
 import com.base.util.SnackbarUtils;
 import com.base.util.ValidateUtils;
-import com.entity.LoginResult;
+import com.entity.UserInfo;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.ui.gank.R;
@@ -44,7 +42,6 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
         return R.layout.activity_login;
     }
 
-    @SuppressLint("CheckResult")
     @Override
     public void initView() {
         //校验账号密码
@@ -79,9 +76,7 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
                     }
                 });
         RxView.clicks(btnLogin).throttleFirst(5, TimeUnit.SECONDS)
-                .subscribe(o -> {
-                    mPresenter.login(etPhone.getText().toString(), etCode.getText().toString());
-                });
+                .subscribe(o -> mPresenter.login(etPhone.getText().toString(), etCode.getText().toString()));
     }
 
     @Override
@@ -91,13 +86,26 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
 
     @Override
     public void onSucceed(Object result) {
-        if (result instanceof LoginResult) {
-            LoginResult loginResult= (LoginResult) result;
-            LoginResult.ResponseDataEntity.AppUserEntity results = loginResult.getResponseData().getAppUser();
-            LogUtils.d(results.getUserType() + "");
-            ActivityCollector.getInstance().finishActivity();
-        }
-    }
+
+//        HttpResult httpResult= (HttpResult) result;
+//        BaseRespnseData respnseData= (BaseRespnseData) httpResult.getResponseData();
+
+        UserInfo userInfo= (UserInfo) result;
+        LogUtils.d(userInfo.getUserMobile()+"ssssss");}
+//        HttpResult httpResult= (HttpResult) result;
+//        BaseRespnseData baseRespnseData= (BaseRespnseData) httpResult.getResponseData();
+//        UserInfo userInfo= (UserInfo) baseRespnseData.getData();
+//        LogUtils.d("成功1：" + userInfo.getUserMobile());
+//        BaseRespnseData httpResult = (BaseRespnseData) ((HttpResult) result).getResponseData();
+//        LogUtils.d("成功：" + ((UserInfo) httpResult.getData()).getUserMobile() + "");
+//        HttpResult<BaseRespnseData<UserInfo>> loginResult = (HttpResult<BaseRespnseData<UserInfo>>) result;
+//                    LogUtils.d("成功了2：" + loginResult.getResponseData().getData().getUserMobile() + "");
+//        if (httpResult.getData() instanceof UserInfo) {
+//            HttpResult<BaseRespnseData<UserInfo>> loginResult = (HttpResult<BaseRespnseData<UserInfo>>) result;
+//            LogUtils.d("成功了2：" + ((UserInfo) httpResult.getData()).getUserMobile() + "");
+//            ActivityCollector.getInstance().finishActivity();
+//        }
+
 
 
     @Override
@@ -116,6 +124,5 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
 
     @Override
     public void hideDialog() {
-
     }
 }
