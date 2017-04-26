@@ -8,8 +8,9 @@ import com.base.helper.RxSchedulers;
 import com.base.util.LogUtils;
 import com.base.util.MD5Util;
 import com.base.util.WiFiIpUtils;
-import com.entity.BaseResponse;
-import com.entity.LoginResult;
+import com.entity.BaseRespnseData;
+import com.entity.HttpResult;
+import com.entity.UserInfo;
 import com.ui.gank.R;
 
 import java.util.concurrent.TimeUnit;
@@ -35,19 +36,19 @@ public class LoginPresenter extends LoginContrat.Presenter {
 
     @Override
     public void login(String userPhone, String code) {
-        ResourceSubscriber resourceSubscriber = new ResourceSubscriber<BaseResponse<LoginResult>>() {
+        ResourceSubscriber resourceSubscriber = new ResourceSubscriber<HttpResult<BaseRespnseData<UserInfo>>>() {
             @Override
-            public void onNext(BaseResponse<LoginResult> result) {
-                LogUtils.d("result请求成功");
+            public void onNext(HttpResult<BaseRespnseData<UserInfo>> result) {
+                LogUtils.d("result请求成功::");
+                LogUtils.d(result.getResponseData().getAppUser().getUserMobile());
                 if (result != null) {
                     if (result.getResponseCode() == 0) {
-                        mView.onSucceed(result);
+                        mView.onSucceed(result.getResponseData().getAppUser());
                     } else {
                         mView.onFail("账号或密码错误,请重新输入！");
                     }
                 }
             }
-
             @Override
             public void onError(Throwable t) {
                 LogUtils.d(t.getMessage());
@@ -72,16 +73,19 @@ public class LoginPresenter extends LoginContrat.Presenter {
 
     @Override
     public void sendeCode(String userPhone) {
-        Disposable disposable = mModel.sendCode(userPhone, 2 + "")
-                .subscribe(result -> {
-                    if (result != null && result.getResponseCode() == 20000) {
-                        LogUtils.d(result.getResponseDescription());
-                        mView.onSucceed(result);
-                    } else {
-                        mView.onFail("验证码获取失败！");
-                    }
-                });
-        addSubscription(disposable);
+//        Disposable disposable = mModel.sendCode(userPhone, 2 + "")
+//                .subscribe(result -> {
+//                    if (result != null && result.getResponseCode() == 20000) {
+//                        LogUtils.d(result.getResponseDescription());
+//                        mView.onSucceed(result);
+//                    } else {
+//                        mView.onFail("验证码获取失败！");
+//                    }
+//                });
+//        addSubscription(disposable);
+
+//        mModel.sendCode(userPhone,"2")
+//                .subscribe(new BaseSubscriber<HttpResult>());
     }
 
     /**

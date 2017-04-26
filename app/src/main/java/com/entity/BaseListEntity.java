@@ -17,5 +17,5 @@ public abstract class BaseListEntity<T> extends BaseEntity.BaseBean implements B
     }
 
     @Override
-    public abstract Observable<BaseResponse<List<T>>> getPage(int page);
+    public abstract Observable<HttpResult<List<T>>> getPage(int page);
 }

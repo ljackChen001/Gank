@@ -25,7 +25,7 @@ public interface ApiService {
     Flowable<Gank> getGankData(@Path("page") String page);
 
     @POST(C.ApiInterface.LOGIN_REGISTER)
-    Flowable<LoginResult> login(@Query("userPhone") String userPhone,
+    Flowable<BaseResponse<LoginResult>> login(@Query("userPhone") String userPhone,
                                               @Query("time") String timestamp,
                                               @Query("appkeyId") String appkeyId,
                                               @Query("deviceToken") String deviceToken,

@@ -1,7 +1,8 @@
 package com.api;
 
 import com.App;
-import com.C;
+import com.Constants;
+import com.base.helper.GsonConverterFactory;
 import com.base.util.LogUtils;
 import com.base.util.NetWorkUtil;
 import com.google.gson.Gson;
@@ -25,7 +26,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by chenbaolin on 2017/4/5.
@@ -97,9 +97,10 @@ public class RetrofitUtil {
         //配置Retrofit
         retrofit = new Retrofit.Builder()
                 .client(okHttpClient)//把OkHttpClient添加进来
+                //.addConverterFactory(GsonConverterFactory.create(gson))
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
-                .baseUrl(C.BASE_URL)
+                .baseUrl(Constants.BASE_URL)
                 .build();
         //        apiService = retrofit.create(retrofitUtilService.class);
     }
