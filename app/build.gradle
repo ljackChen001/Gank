@@ -17,6 +17,9 @@ android {
             abiFilters 'armeabi-v7a' //,'armeabi', 'x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a'
         }
         vectorDrawables.useSupportLibrary = true
+        jackOptions{
+
+        }
     }
     buildTypes {
         release {
@@ -31,6 +34,7 @@ android {
 //    dataBinding {
 //        enabled true
 //    }
+
 }
 
 dependencies {
@@ -69,7 +73,7 @@ dependencies {
 
     compile 'com.youth.banner:banner:1.4.9'
     compile 'me.yokeyword:indexablerecyclerview:1.2.3'
-    compile 'com.jzxiang.pickerview:TimePickerDialog:1.0.1'
+//    compile 'com.jzxiang.pickerview:TimePickerDialog:1.0.1'
 
     /*** OkHttp客户端HTTP检查器*/
     debugCompile 'com.readystatesoftware.chuck:library:1.0.0'

@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 public class BaseRespnseData<T> implements Serializable{
     private String tokenStr;
-    private T appUser1;
+    private T appUser;
 
     public String getTokenStr() {
         return tokenStr;
@@ -19,11 +19,11 @@ public class BaseRespnseData<T> implements Serializable{
     }
 
     public T getAppUser() {
-        return appUser1;
+        return appUser;
     }
 
-    public BaseRespnseData setAppUser1(T appUser) {
-        this.appUser1 = appUser;
+    public BaseRespnseData setAppUser(T appUser) {
+        this.appUser = appUser;
         return this;
     }
 }

@@ -91,7 +91,9 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
 //        BaseRespnseData respnseData= (BaseRespnseData) httpResult.getResponseData();
 
         UserInfo userInfo= (UserInfo) result;
-        LogUtils.d(userInfo.getUserMobile()+"ssssss");}
+        LogUtils.d(userInfo.getUserMobile()+"ssssss");
+
+    }
 //        HttpResult httpResult= (HttpResult) result;
 //        BaseRespnseData baseRespnseData= (BaseRespnseData) httpResult.getResponseData();
 //        UserInfo userInfo= (UserInfo) baseRespnseData.getData();

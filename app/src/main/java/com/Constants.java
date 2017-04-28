@@ -27,6 +27,8 @@ public class Constants {
     public static final class ApiInterface {
         public static final String LOGIN_REGISTER = "loginOrRegister";//登录接口
         public static final String SEND_CODE = "sendCode";//获取验证码
+        public static final String FIND_MY_CARS = "findMyCars";//我的车辆
+        public static final String FIND_RENTAL_CARS = "findRentalCars";//获取验证码
 
     }
 

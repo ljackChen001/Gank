@@ -2,20 +2,26 @@ package com.api;
 
 import com.App;
 import com.Constants;
-import com.base.helper.GsonConverterFactory;
+import com.base.helper.APIException;
+import com.base.helper.RxSchedulers;
 import com.base.util.LogUtils;
 import com.base.util.NetWorkUtil;
+import com.entity.HttpResult;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.readystatesoftware.chuck.ChuckInterceptor;
+
+import org.reactivestreams.Publisher;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
+import io.reactivex.FlowableTransformer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.ResourceSubscriber;
 import okhttp3.Cache;
@@ -98,7 +104,7 @@ public class RetrofitUtil {
         retrofit = new Retrofit.Builder()
                 .client(okHttpClient)//把OkHttpClient添加进来
                 //.addConverterFactory(GsonConverterFactory.create(gson))
-                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addConverterFactory(retrofit2.converter.gson.GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .baseUrl(Constants.BASE_URL)
                 .build();
@@ -156,4 +162,27 @@ public class RetrofitUtil {
                         () -> LogUtils.d("doOnLifecycle", "OnCancel"))
                 .subscribeWith(subscriber);
     }
+
+    public static <T> FlowableTransformer<HttpResult<T>, T> handleLiveResult() {
+        return new FlowableTransformer<HttpResult<T>, T>() {
+            @Override
+            public Publisher<T> apply(Flowable<HttpResult<T>> upstream) {
+                return upstream.flatMap(new Function<HttpResult<T>, Publisher<T>>() {
+                    @Override
+                    public Publisher<T> apply(HttpResult<T> result) throws Exception {
+
+                        return s -> {
+                            if (result.isTokenInvalid()) {
+                                s.onError(new APIException(result.getResponseCode(), result.getResponseDescription()));
+                            } else {
+                                s.onNext(result.getResponseData());
+                                s.onComplete();
+                            }
+                        };
+                    }
+                }).compose(RxSchedulers.io_main_flowable());
+            }
+        };
+    }
+
 }

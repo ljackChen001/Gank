@@ -21,6 +21,7 @@ public class BaseSubscriber<T> extends ResourceSubscriber<T> {
 
     @Override
     public void onNext(T t) {
+
     }
 
 

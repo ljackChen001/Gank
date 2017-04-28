@@ -7,7 +7,6 @@ import com.entity.BaseRespnseData;
 import com.entity.HttpResult;
 import com.entity.UserInfo;
 
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 /**
@@ -21,8 +20,8 @@ public interface LoginContrat {
         void onFail(String err);
     }
     interface Model extends BaseModel {
-        Flowable<HttpResult<BaseRespnseData<UserInfo>>> login(String userPhone, String time, String appkeyId, String deviceToken,
-                                                              String ip, String source, String verificationResponseCode, String additional);
+        Observable<BaseRespnseData<UserInfo>> login(String userPhone, String time, String appkeyId, String deviceToken,
+                                                    String ip, String source, String verificationResponseCode, String additional);
 
         Observable<HttpResult> sendCode(String userPhone, String codeType);
     }

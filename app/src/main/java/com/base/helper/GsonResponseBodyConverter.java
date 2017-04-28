@@ -1,5 +1,7 @@
 package com.base.helper;
 
+import com.base.util.LogUtils;
+import com.entity.HttpResult;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
@@ -33,11 +35,13 @@ final class GsonResponseBodyConverter<T> implements Converter<ResponseBody, T> {
     @Override
     public T convert(ResponseBody value) throws IOException {
         String response = value.string();
-        HttpStatus httpStatus = gson.fromJson(response, HttpStatus.class);
-        if (httpStatus.isCodeInvalid()) {
+        HttpResult httpResult = gson.fromJson(response, HttpResult.class);
+        LogUtils.d(httpResult.getResponseCode()+"---------------");
+        if (!httpResult.isTokenInvalid()) {
+            LogUtils.d("!httpResult.isTokenInvalid()");
             value.close();
             try {
-                throw new APIException(httpStatus.getCode(),httpStatus.getMessage());
+                throw new APIException(httpResult.getResponseCode(), httpResult.getResponseDescription());
             } catch (APIException e) {
                 e.printStackTrace();
             }

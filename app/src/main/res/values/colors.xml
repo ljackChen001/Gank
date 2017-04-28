@@ -47,4 +47,9 @@
     <color name="home_day_color">#F6911F</color>
     <color name="bgColor_overlay">#60000000</color>
 
+    <!-- 日期选择 -->
+    <color name="timetimepicker_default_text_color">#999999</color>
+    <color name="timepicker_toolbar_bg">#e60012</color>
+    <color name="timepicker_dialog_bg">#80000000</color>
+    <color name="timepicker_line">#e8e8e8</color>
 </resources>

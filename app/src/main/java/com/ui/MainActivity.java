@@ -23,6 +23,8 @@ import com.base.util.StatusBarUtil;
 import com.base.util.TimeUtils;
 import com.model.Gank;
 import com.ui.component.cityselect.PickCityActivity;
+import com.ui.component.pickerview.TimePickerDialog;
+import com.ui.component.pickerview.data.Type;
 import com.ui.component.wheelview.DateSelectWheel;
 import com.ui.gank.R;
 import com.ui.login.LoginActivity;
@@ -32,7 +34,9 @@ import com.youth.banner.BannerConfig;
 import com.youth.banner.Transformer;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -72,7 +76,9 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
     LinearLayout layoutReturnCar;
     private long exitTime = 0;
     private String currentTime;
-
+    TimePickerDialog mDialogMonthDayHourMinute;
+    private long tenYears;
+    SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     @Override
     public int setLayoutResouceId() {
         return R.layout.activity_main;
@@ -87,15 +93,60 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
         initDrawer();
         initBanner();
         initTime();
+        tenYears = 3L * 365 * 1000 * 60 * 60 * 24L;
+        initPickTime();
         citySelectLayout.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), PickCityActivity.class)));
+
+
     }
+
+    private void initPickTime() {
+//    mDialogAll = new TimePickerDialog.Builder()
+//                .setCallBack(this)
+//                .setCancelStringId("Cancel")
+//                .setSureStringId("Sure")
+//                .setTitleStringId("TimePicker")
+//                .setMonthText("月")
+//                .setDayText("日")
+//                .setHourText("时")
+//                .setMinuteText("分")
+//                .setCyclic(false)
+//                .setMinMillseconds(System.currentTimeMillis())
+//                .setMaxMillseconds(System.currentTimeMillis() + tenYears)
+//                .setCurrentMillseconds(System.currentTimeMillis())
+//                .setThemeColor(getResources().getColor(R.color.timepicker_dialog_bg))
+//                .setType(Type.MONTH_DAY_HOUR_MIN)
+//                .setWheelItemTextNormalColor(getResources().getColor(R.color.timetimepicker_default_text_color))
+//                .setWheelItemTextSelectorColor(getResources().getColor(R.color.timepicker_toolbar_bg))
+//                .setWheelItemTextSize(12)
+//                .build();
+//        mDialogYearMonth = new TimePickerDialog.Builder()
+//                .setType(Type.YEAR_MONTH)
+//                .setThemeColor(getResources().getColor(R.color.colorPrimary))
+//                .setCallBack(this)
+//                .build();
+//        mDialogYearMonthDay = new TimePickerDialog.Builder()
+//                .setType(Type.YEAR_MONTH_DAY)
+//                .setCallBack(this)
+//                .build();
+        mDialogMonthDayHourMinute = new TimePickerDialog.Builder()
+                .setType(Type.MONTH_DAY_HOUR_MIN)
+                .setCallBack(this::onDateSet)
+                .build();
+//        mDialogHourMinute = new TimePickerDialog.Builder()
+//                .setType(Type.HOURS_MINS)
+//                .setCallBack(this)
+//                .build();
+    }
+
 
     private void initTime() {
         currentTime = TimeUtils.getCurrentTimeInString();
         layoutGetcarTime.setOnClickListener(v -> {
             try {
-                getCarTime();
-            } catch (ParseException e) {
+                mDialogMonthDayHourMinute.show(getSupportFragmentManager(), "month_day_hour_minute");
+//                getCarTime();
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });
@@ -110,59 +161,59 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
 
     public void getCarTime() throws ParseException {
         new DateSelectWheel(mContext, 1).setCallBack(params -> {
-//            String str1 = params[0];//月日
-//            String str2 = params[1];//周几
-//            String str3 = params[2];//时
-//            String str4 = params[3];//分
-//            String strQutime = TimeUtils.getNowYear() + "-" + str1;
-//            long lonQutine = TimeUtils.getStringToDate(strQutime) + DEFAULT_TIME;
-//            tvMonthReturn.setText(TimeUtils.getMonthDay(lonQutine));
-//            tvWeekReturn.setText(TimeUtils.getWeekString(lonQutine) + TimeUtils.getNowFen());
-//            tvDay.setText("1");
-//            String QuTime = str3 + ":" + str4;
-//            long LongQuTime = TimeUtils.getHHmm(QuTime);
-//            long sysoutTime = TimeUtils.getHHmm(TimeUtils.getNowFen());
-//            if (LongQuTime - sysoutTime < 120 * 60 * 1000) {
-//                tvMonth.setText(TimeUtils.getMonthDay(systime));
-//                long time = TimeUtils.getHHmm(TimeUtils.getNowFen()) + 120 * 60 * 1000;
-//                tvWeek.setText(TimeUtils.getWeekString(systime) + TimeUtils.getStringHHmm(time));
-//                ToastUtil.show("取车时间应大于当前2小时");
-//            } else {
-//                tvMonth.setText(str1);
-//                tvWeek.setText(str2 + str3 + ":" + str4);
-//                returnCarTime();
-//            }
+            //            String str1 = params[0];//月日
+            //            String str2 = params[1];//周几
+            //            String str3 = params[2];//时
+            //            String str4 = params[3];//分
+            //            String strQutime = TimeUtils.getNowYear() + "-" + str1;
+            //            long lonQutine = TimeUtils.getStringToDate(strQutime) + DEFAULT_TIME;
+            //            tvMonthReturn.setText(TimeUtils.getMonthDay(lonQutine));
+            //            tvWeekReturn.setText(TimeUtils.getWeekString(lonQutine) + TimeUtils.getNowFen());
+            //            tvDay.setText("1");
+            //            String QuTime = str3 + ":" + str4;
+            //            long LongQuTime = TimeUtils.getHHmm(QuTime);
+            //            long sysoutTime = TimeUtils.getHHmm(TimeUtils.getNowFen());
+            //            if (LongQuTime - sysoutTime < 120 * 60 * 1000) {
+            //                tvMonth.setText(TimeUtils.getMonthDay(systime));
+            //                long time = TimeUtils.getHHmm(TimeUtils.getNowFen()) + 120 * 60 * 1000;
+            //                tvWeek.setText(TimeUtils.getWeekString(systime) + TimeUtils.getStringHHmm(time));
+            //                ToastUtil.show("取车时间应大于当前2小时");
+            //            } else {
+            //                tvMonth.setText(str1);
+            //                tvWeek.setText(str2 + str3 + ":" + str4);
+            //                returnCarTime();
+            //            }
         });
     }
 
     public void returnCarTime() throws ParseException {
         new DateSelectWheel(mContext, 2).setCallBack(params -> {
-//            String str1 = params[0];//月日
-//            String str2 = params[1];//周几
-//            String str3 = params[2];//时
-//            String str4 = params[3];//分
-//            String mTextquday = tvMonth.getText().toString();
-//            String QuTime1 = tvWeek.getText().toString().substring(2);
-//            long LongQuTime1 = TimeUtils.getStringToDateTime(TimeUtils.getNowYear() + "-" +
-//                    mTextquday + " " + QuTime1);
-//            long huanTime = TimeUtils.getStringToDateTime(TimeUtils.getNowYear() + "-" + str1 + " " +
-//                    "" + str3 + ":" + str4);
-//            String quday = mTextquday.substring(3);
-//            String huanday = str1.substring(3);
-//            if (huanTime - LongQuTime1 < 24 * 60 * 60 * 1000) {
-//                ToastUtil.show("还车时间应大于取车时间24小时!");
-//            } else {
-//                if (huanTime - LongQuTime1 > 20 * 24 * 60 * 60 * 1000) {
-//                    ToastUtil.show("还车时间不能超过20天");
-//                } else {
-//                    tvDay.setText((Integer.parseInt(huanday) - Integer.parseInt(quday)) + "");
-//                    tvMonthReturn.setText(str1);
-//                    tvWeekReturn.setText(str2 + str3 + ":" + str4);
-//
-//                }
-//
-//
-//            }
+            //            String str1 = params[0];//月日
+            //            String str2 = params[1];//周几
+            //            String str3 = params[2];//时
+            //            String str4 = params[3];//分
+            //            String mTextquday = tvMonth.getText().toString();
+            //            String QuTime1 = tvWeek.getText().toString().substring(2);
+            //            long LongQuTime1 = TimeUtils.getStringToDateTime(TimeUtils.getNowYear() + "-" +
+            //                    mTextquday + " " + QuTime1);
+            //            long huanTime = TimeUtils.getStringToDateTime(TimeUtils.getNowYear() + "-" + str1 + " " +
+            //                    "" + str3 + ":" + str4);
+            //            String quday = mTextquday.substring(3);
+            //            String huanday = str1.substring(3);
+            //            if (huanTime - LongQuTime1 < 24 * 60 * 60 * 1000) {
+            //                ToastUtil.show("还车时间应大于取车时间24小时!");
+            //            } else {
+            //                if (huanTime - LongQuTime1 > 20 * 24 * 60 * 60 * 1000) {
+            //                    ToastUtil.show("还车时间不能超过20天");
+            //                } else {
+            //                    tvDay.setText((Integer.parseInt(huanday) - Integer.parseInt(quday)) + "");
+            //                    tvMonthReturn.setText(str1);
+            //                    tvWeekReturn.setText(str2 + str3 + ":" + str4);
+            //
+            //                }
+            //
+            //
+            //            }
         });
     }
 
@@ -312,6 +363,15 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
     protected void onDestroy() {
         super.onDestroy();
         rxBus.clear();
+    }
+
+    public void onDateSet(TimePickerDialog timePickerDialog, long millseconds) {
+        String text = getDateToString(millseconds);
+//        mTvTime.setText(text);
+    }
+    public String getDateToString(long time) {
+        Date d = new Date(time);
+        return sf.format(d);
     }
 
 }

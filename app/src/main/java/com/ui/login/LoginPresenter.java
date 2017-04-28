@@ -3,13 +3,11 @@ package com.ui.login;
 import android.widget.Button;
 
 import com.App;
-import com.api.RetrofitUtil;
 import com.base.helper.RxSchedulers;
 import com.base.util.LogUtils;
 import com.base.util.MD5Util;
 import com.base.util.WiFiIpUtils;
 import com.entity.BaseRespnseData;
-import com.entity.HttpResult;
 import com.entity.UserInfo;
 import com.ui.gank.R;
 
@@ -17,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.subscribers.ResourceSubscriber;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by chenbaolin on 2017/4/16.
@@ -34,58 +32,74 @@ public class LoginPresenter extends LoginContrat.Presenter {
     }
 
 
+    //    @Override
+    //    public void login(String userPhone, String code) {
+    //        ResourceSubscriber resourceSubscriber = new ResourceSubscriber<HttpResult<BaseRespnseData<UserInfo>>>() {
+    //            @Override
+    //            public void onNext(HttpResult<BaseRespnseData<UserInfo>> result) {
+    //                LogUtils.d("result请求成功::");
+    //                LogUtils.d(result.getResponseData().getAppUser().getUserMobile());
+    //                if (result != null) {
+    //                    if (result.getResponseCode() == 0) {
+    //                        mView.onSucceed(result.getResponseData().getAppUser());
+    //                    } else {
+    //                        mView.onFail("账号或密码错误,请重新输入！");
+    //                    }
+    //                }
+    //            }
+    //            @Override
+    //            public void onError(Throwable t) {
+    //                LogUtils.d(t.getMessage());
+    //                LogUtils.d("网络连接失败");
+    //                mView.onFail(t.getMessage());
+    //                onComplete();
+    //            }
+    //
+    //            @Override
+    //            public void onComplete() {
+    //                this.dispose();
+    //            }
+    //        };
+    //        /**
+    //         * 登录和注册
+    //         */
+    //        addSubscription(RetrofitUtil.getInstance().startObservable(
+    //                mModel.login(userPhone, timestamp, "1234", "", wifiip, "02", code,
+    //                        MD5Util.md5(userPhone + "al" + timestamp + "1234" + wifiip + code).toUpperCase()),
+    //                resourceSubscriber));
+    //    }
+
     @Override
     public void login(String userPhone, String code) {
-        ResourceSubscriber resourceSubscriber = new ResourceSubscriber<HttpResult<BaseRespnseData<UserInfo>>>() {
-            @Override
-            public void onNext(HttpResult<BaseRespnseData<UserInfo>> result) {
-                LogUtils.d("result请求成功::");
-                LogUtils.d(result.getResponseData().getAppUser().getUserMobile());
-                if (result != null) {
-                    if (result.getResponseCode() == 0) {
-                        mView.onSucceed(result.getResponseData().getAppUser());
-                    } else {
-                        mView.onFail("账号或密码错误,请重新输入！");
-                    }
-                }
-            }
-            @Override
-            public void onError(Throwable t) {
-                LogUtils.d(t.getMessage());
-                LogUtils.d("网络连接失败");
-                mView.onFail(t.getMessage());
-                onComplete();
-            }
+        //        Am4MNbd6cl2FXhZx75tNVXv2_ZPk6hyiyQIbHjPSi30L
+        mModel.login(userPhone, timestamp, "1234", "Am4MNbd6cl2FXhZx75tNVXv2_ZPk6hyiyQIbHjPSi30L", wifiip, "02", code,
+                MD5Util.md5(userPhone + "al" + timestamp + "1234" + wifiip + code).toUpperCase())
+                .subscribe(new Consumer<BaseRespnseData<UserInfo>>() {
+                    @Override
+                    public void accept(BaseRespnseData<UserInfo> userInfo) throws Exception {
+                        if (userInfo != null) {
 
-            @Override
-            public void onComplete() {
-                this.dispose();
-            }
-        };
-        /**
-         * 登录和注册
-         */
-        addSubscription(RetrofitUtil.getInstance().startObservable(
-                mModel.login(userPhone, timestamp, "1234", "", wifiip, "02", code,
-                        MD5Util.md5(userPhone + "al" + timestamp + "1234" + wifiip + code).toUpperCase()),
-                resourceSubscriber));
+                            LogUtils.d("userInfo!=null:" + userInfo.getTokenStr());
+                        }
+                    }
+                });
     }
 
     @Override
     public void sendeCode(String userPhone) {
-//        Disposable disposable = mModel.sendCode(userPhone, 2 + "")
-//                .subscribe(result -> {
-//                    if (result != null && result.getResponseCode() == 20000) {
-//                        LogUtils.d(result.getResponseDescription());
-//                        mView.onSucceed(result);
-//                    } else {
-//                        mView.onFail("验证码获取失败！");
-//                    }
-//                });
-//        addSubscription(disposable);
+        //        Disposable disposable = mModel.sendCode(userPhone, 2 + "")
+        //                .subscribe(result -> {
+        //                    if (result != null && result.getResponseCode() == 20000) {
+        //                        LogUtils.d(result.getResponseDescription());
+        //                        mView.onSucceed(result);
+        //                    } else {
+        //                        mView.onFail("验证码获取失败！");
+        //                    }
+        //                });
+        //        addSubscription(disposable);
 
-//        mModel.sendCode(userPhone,"2")
-//                .subscribe(new BaseSubscriber<HttpResult>());
+        //        mModel.sendCode(userPhone,"2")
+        //                .subscribe(new BaseSubscriber<HttpResult>());
     }
 
     /**

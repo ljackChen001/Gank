@@ -54,17 +54,17 @@ public class DateSelectWheel extends Dialog implements WheelView.OnWheelChangedL
         initData();
         day.setAdapter(new ArrayWheelAdapter<>(days));
         day.setVisibleItems(3);
-        day.setCyclic(false);
+        day.setCyclic(true);
         day.setCurrentItem(0);
 
         hour.setAdapter(new ArrayWheelAdapter<>(hours));
         hour.setVisibleItems(3);
-        hour.setCyclic(false);
+        hour.setCyclic(true);
         hour.setCurrentItem(0);
 
         min.setAdapter(new ArrayWheelAdapter<>(mins));
         min.setVisibleItems(3);
-        min.setCyclic(false);
+        min.setCyclic(true);
         min.setCurrentItem(0);
         day.addChangingListener(this);
         hour.addChangingListener(this);
@@ -119,21 +119,17 @@ public class DateSelectWheel extends Dialog implements WheelView.OnWheelChangedL
 
     @SuppressLint("WrongConstant")
     private void initData() {
-        //        int curMonth = calendar.get(Calendar.MONTH) + 1;//通过Calendar算出的月数要+1
         int curYear = calendar.get(Calendar.YEAR);
-        for (int i = 1; i <13; i++) {
-
-            int moth = getDay(curYear, i);
-            LogUtils.d(moth+"天");
-            days = new String[moth];
-            for (int j = 0; j < moth; j++) {
-                long time = TimeUtils.getStringToDate(curYear + "-" + i + "-" + (j + 1));
-                days[j] = i + "月" + (j + 1) + "日" + TimeUtils.getWeekString(time);
-                LogUtils.d(days[j].toString());
+        int curMonth = calendar.get(Calendar.MONTH) + 1;//通过Calendar算出的月数要+1
+        int moth = getDay(curYear, curMonth);
+        LogUtils.d(moth + "'");
+        for (int j = 0; j < 2; j++) {
+            days = new String[moth+j];
+            for (int i = 0; i < moth; i++) {
+                long time = TimeUtils.getStringToDate(curYear + "-" + curMonth + "-" + (i + 1));
+                days[i] = curMonth + "月" + (i + 1) + "日" + TimeUtils.getWeekString(time);
             }
-            LogUtils.d(curYear + ":::" + i + ":::" + moth);
         }
-
         // 初始化小时
         hours = new String[24];
         for (int i = 0; i < 24; i++) {
@@ -147,6 +143,7 @@ public class DateSelectWheel extends Dialog implements WheelView.OnWheelChangedL
                 mins[i] = (i == 0 ? "" : String.valueOf(i)) + "分";
             }
         }
+
     }
 
     private String getSelectHour(int value) {
