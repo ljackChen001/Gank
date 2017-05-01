@@ -7,11 +7,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.base.helper.RxBus;
+import com.base.util.ActivityCollector;
 import com.base.util.LogUtils;
-import com.base.util.NetWorkUtil;
 import com.base.util.StatusBarUtil;
 import com.ui.gank.R;
 import com.view.widget.SwipeBackLayout;
+
+import java.lang.ref.WeakReference;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -39,17 +41,7 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
             mPresenter = onCreatePresenter();
         }
         initView();
-        LogUtils.d("生命周期："+TAG+"==>>onCreate");
-    }
-
-    @Override
-    protected void onDestroy() {
-        LogUtils.d("生命周期："+TAG+"==>>onDestroy");
-        super.onDestroy();
-        if (mPresenter != null) {
-            mPresenter.unSubscribe();
-        }
-        unbinder.unbind();
+        LogUtils.d("生命周期：" + TAG + "==>>onCreate");
     }
 
 
@@ -70,45 +62,89 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
         return container;
     }
 
+    /**
+     * 替代onCreate的使用
+     */
+    protected abstract int setLayoutResouceId();
 
-    public abstract int setLayoutResouceId();
-
-    public abstract void initView();
+    /**
+     * 初始化view
+     */
+    protected abstract void initView();
 
     protected abstract P onCreatePresenter();
+
+    /**
+     * Bundle  传递数据
+     *
+     * @param extras
+     */
+    protected abstract void getBundleExtras(Bundle extras);
+
+    //    protected void initTitle() {
+    //        title = (TextView) findViewById(R.id.toolbar_title);
+    //        back = (ImageView) findViewById(R.id.toolbar_back);
+    //        iv_menu = (ImageView) findViewById(R.id.toolbar_iv_menu);
+    //        tv_menu = (TextView) findViewById(R.id.toolbar_tv_menu);
+    //        if (null != back) {
+    //            back.setOnClickListener(new View.OnClickListener() {
+    //                @Override
+    //                public void onClick(View v) {
+    //                    finish();
+    //                }
+    //            });
+    //        }
+    //    }
+    //
+    //    public void setTitle(String string) {
+    //        if (null != title)
+    //            title.setText(string);
+    //    }
+    //
+    //    public void setTitle(int id) {
+    //        if (null != title)
+    //            title.setText(id);
+    //    }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if(!NetWorkUtil.isNetConnected(this)){
-            LogUtils.d("没网啊啊 啊啊啊 啊");
-        }
-        LogUtils.d("生命周期："+TAG+"==>>onStart");
+        LogUtils.d("生命周期：" + TAG + "==>>onStart");
     }
 
     @Override
     protected void onStop() {
-        LogUtils.d("生命周期："+TAG+"==>>onStop");
+        LogUtils.d("生命周期：" + TAG + "==>>onStop");
         super.onStop();
     }
 
     @Override
     protected void onPause() {
-        LogUtils.d("生命周期："+TAG+"==>>onPause");
+        LogUtils.d("生命周期：" + TAG + "==>>onPause");
         super.onPause();
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
-        LogUtils.d("生命周期："+TAG+"==>>onRestart");
+        LogUtils.d("生命周期：" + TAG + "==>>onRestart");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        LogUtils.d("生命周期："+TAG+"==>>onResume");
+        LogUtils.d("生命周期：" + TAG + "==>>onResume");
     }
 
+    @Override
+    protected void onDestroy() {
+        LogUtils.d("生命周期：" + TAG + "==>>onDestroy");
+        if (mPresenter != null) {
+            mPresenter.unSubscribe();
+        }
+        unbinder.unbind();
+        ActivityCollector.getInstance().removeActivity(new WeakReference<>(this));
+        super.onDestroy();
+    }
 
 }
