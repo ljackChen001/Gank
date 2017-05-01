@@ -1,8 +1,10 @@
-package com.base.util;
+package com.base;
 
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+
+import com.base.util.ActivityCollector;
 
 import java.lang.ref.WeakReference;
 

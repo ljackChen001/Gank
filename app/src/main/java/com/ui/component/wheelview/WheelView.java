@@ -53,143 +53,164 @@ import java.util.List;
  */
 public class WheelView extends View {
     /**
-     * Scrolling duration
+     * 滚动花费时间 Scrolling duration
      */
     private static final int SCROLLING_DURATION = 400;
-
     /**
-     * Minimum delta for scrolling
+     * 最小的滚动值, 每次最少滚动一个单位
      */
     private static final int MIN_DELTA_FOR_SCROLLING = 1;
-
     /**
-     * Current value & label text color
+     * 当前值与标签文本颜色
      */
-    //private static final int VALUE_TEXT_COLOR = Color.parseColor("#f4b92d");
-    private static final int VALUE_TEXT_COLOR = Color.parseColor("#333333");
-
+    private static final int VALUE_TEXT_COLOR = 0xFF000000;
     /**
-     * Items text color
+     * 项目文本颜色
      */
-    private static final int ITEMS_TEXT_COLOR = Color.parseColor("#9b9792");
+    private static final int ITEMS_TEXT_COLOR = 0x55333333;
 
     /**
-     * Top and bottom shadows colors
+     * 顶部和底部的阴影颜色
      */
-    private static final int[] SHADOWS_COLORS = new int[]{0xFF111111, 0x00AAAAAA, 0x00AAAAAA};
-
+    private static final int[] SHADOWS_COLORS = new int[]{0xFFFFFFFF,
+            0x00FFFFFF, 0x00FFFFFF};
     /**
-     * Additional items height (is added to standard text item height)
+     * 额外的条目高度
      */
     private static final int ADDITIONAL_ITEM_HEIGHT = 30;
 
     /**
-     * Text size
+     * 文字字号
      */
-    private static final int TEXT_SIZE = 15;
-
+    //	public int TEXT_SIZE;
+    public int TEXT_SIZE = 15;
     /**
-     * Top and bottom items offset (to hide that)
+     * 顶部 和 底部 条目的隐藏大小,
+     * 如果是正数 会隐藏一部份,
+     * 0 顶部 和 底部的字正好紧贴 边缘,
+     * 负数时 顶部和底部 与 字有一定间距
      */
-    private static final int ITEM_OFFSET = TEXT_SIZE / 5;
 
-    /**
-     * Additional width for items layout
-     */
+    private final int ITEM_OFFSET = TEXT_SIZE / 5;
+
     private static final int ADDITIONAL_ITEMS_SPACE = 10;
 
     /**
-     * Label offset
+     * 标签抵消
      */
     private static final int LABEL_OFFSET = 8;
 
-    /**
-     * Left and right padding value
-     */
     private static final int PADDING = 10;
-
     /**
-     * Default count of visible items
+     * 默认的可显示的条目数
      */
     private static final int DEF_VISIBLE_ITEMS = 5;
 
-    // Wheel Values
-    private WheelAdapter adapter = null;
-
-    private int currentItem = 0;
-
-    // Widths
-    private int itemsWidth = 0;
-
-    private int labelWidth = 0;
-
-    // Count of visible items
-    private int visibleItems = DEF_VISIBLE_ITEMS;
-
-    // Item height
-    private int itemHeight = 0;
-
-    // Text paints
-    private TextPaint itemsPaint;
-
-    private TextPaint valuePaint;
-
-    // Layouts
-    private StaticLayout itemsLayout;
-
-    private StaticLayout labelLayout;
-
-    private StaticLayout valueLayout;
-
-    // Label & background
-    private String label;
-
-    private Drawable centerDrawable;
-
-    // Shadows drawables
-    private GradientDrawable topShadow;
-
-    private GradientDrawable bottomShadow;
-
-    // Scrolling
-    private boolean isScrollingPerformed;
-
-    private int scrollingOffset;
-
-    // Scrolling animation
-    private GestureDetector gestureDetector;
-
-    private Scroller scroller;
-
-    private int lastScrollY;
-
-    // Cyclic
-    boolean isCyclic = false;
-
-    // Listeners
-    private List<OnWheelChangedListener> changingListeners = new LinkedList<OnWheelChangedListener>();
-
-    private List<OnWheelScrollListener> scrollingListeners = new LinkedList<OnWheelScrollListener>();
-
     /**
-     * Constructor
+     * WheelView 适配器
      */
+    private WheelAdapter adapter = null;
+    /**
+     * 当前显示的条目索引
+     */
+    private int currentItem = 0;
+    /**
+     * 条目宽度
+     */
+    private int itemsWidth = 0;
+    /**
+     * 标签宽度
+     */
+    private int labelWidth = 0;
+    /**
+     * 可见的条目数
+     */
+    private int visibleItems = DEF_VISIBLE_ITEMS;
+    /**
+     * 条目高度
+     */
+    private int itemHeight = 0;
+    /**
+     * 绘制普通条目画笔
+     */
+    private TextPaint itemsPaint;
+    /**
+     * 绘制选中条目画笔
+     */
+    private TextPaint valuePaint;
+    /**
+     * 普通条目布局
+     * StaticLayout 布局用于控制 TextView 组件, 一般情况下不会直接使用该组件,
+     * 除非你自定义一个组件 或者 想要直接调用  Canvas.drawText() 方法
+     */
+    private StaticLayout itemsLayout;
+    private StaticLayout labelLayout;
+    /**
+     * 选中条目布局
+     */
+    private StaticLayout valueLayout;
+    /**
+     * 标签 在选中条目的右边出现
+     */
+    private String label;
+    /**
+     * 选中条目的背景图片
+     */
+    private Drawable centerDrawable;
+    /**
+     * 顶部阴影图片
+     */
+    private GradientDrawable topShadow;
+    /**
+     * 底部阴影图片
+     */
+    private GradientDrawable bottomShadow;
+    /**
+     * 是否在滚动
+     */
+    private boolean isScrollingPerformed;
+    /**
+     * 滚动的位置
+     */
+    private int scrollingOffset;
+    /**
+     * 手势检测器
+     */
+    private GestureDetector gestureDetector;
+    /**
+     * Scroll 类封装了滚动动作.
+     * 开发者可以使用 Scroll 或者 Scroll 实现类 去收集产生一个滚动动画所需要的数据, 返回一个急冲滑动的手势.
+     * 该对象可以追踪随着时间推移滚动的偏移量, 但是这些对象不会自动向 View 对象提供这些位置.
+     * 如果想要使滚动动画看起来比较平滑, 开发者需要在适当的时机  获取 和 使用新的坐标;
+     */
+    private Scroller scroller;
+    /**
+     * 之前所在的 y 轴位置
+     */
+    private int lastScrollY;
+    /**
+     * 是否循环
+     */
+    boolean isCyclic = false;
+    /**
+     * 条目改变监听器集合  封装了条目改变方法, 当条目改变时回调
+     */
+    private List<OnWheelChangedListener> changingListeners = new LinkedList<>();
+    /**
+     * 条目滚动监听器集合, 该监听器封装了 开始滚动方法, 结束滚动方法
+     */
+    private List<OnWheelScrollListener> scrollingListeners = new LinkedList<>();
+
     public WheelView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        // float scale =
-        // context.getApplicationContext().getResources().getDisplayMetrics().scaledDensity;
-        // TEXT_SIZE = (int) (TEXT_SIZE * scale);
         initData(context);
     }
 
     /**
-     * Constructor
+     * 构造方法
      */
     public WheelView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        // float scale =
-        // context.getApplicationContext().getResources().getDisplayMetrics().scaledDensity;
-        // TEXT_SIZE = (int) (TEXT_SIZE * scale);
         initData(context);
     }
 
@@ -198,37 +219,37 @@ public class WheelView extends View {
      */
     public WheelView(Context context) {
         super(context);
-        // float scale =
-        // context.getApplicationContext().getResources().getDisplayMetrics().scaledDensity;
-        // TEXT_SIZE = (int) (TEXT_SIZE * scale);
         initData(context);
     }
 
     /**
-     * Initializes class data
-     *
-     * @param context the context
+     * 初始化数据
      */
     private void initData(Context context) {
         gestureDetector = new GestureDetector(context, gestureListener);
+        /*
+         * 是否允许长按操作,
+         * 如果设置为 true 用户按下不松开, 会返回一个长按事件,
+         * 如果设置为 false, 按下不松开滑动的话 会收到滚动事件.
+         */
         gestureDetector.setIsLongpressEnabled(false);
-
+        //使用默认的 时间 和 插入器 创建一个滚动器
         scroller = new Scroller(context);
     }
 
     /**
-     * Gets wheel adapter
+     * 获取该 WheelView 的适配器
      *
-     * @return the adapter
+     * @return 返回适配器
      */
     public WheelAdapter getAdapter() {
         return adapter;
     }
 
     /**
-     * Sets wheel adapter
+     * 设置适配器
      *
-     * @param adapter the new wheel adapter
+     * @param adapter 要设置的适配器
      */
     public void setAdapter(WheelAdapter adapter) {
         this.adapter = adapter;
@@ -237,12 +258,14 @@ public class WheelView extends View {
     }
 
     /**
-     * Set the the specified scrolling interpolator
+     * 设置 Scroll 的插入器
      *
      * @param interpolator the interpolator
      */
     public void setInterpolator(Interpolator interpolator) {
+        //强制停止滚动
         scroller.forceFinished(true);
+        //创建一个 Scroll 对象
         scroller = new Scroller(getContext(), interpolator);
     }
 
@@ -256,9 +279,9 @@ public class WheelView extends View {
     }
 
     /**
-     * Sets count of visible items
+     * 获取课件条目数
      *
-     * @param count the new count
+     * @return the count of visible items
      */
     public void setVisibleItems(int count) {
         visibleItems = count;
@@ -266,7 +289,7 @@ public class WheelView extends View {
     }
 
     /**
-     * Gets label
+     * 获取标签
      *
      * @return the label
      */
@@ -275,7 +298,7 @@ public class WheelView extends View {
     }
 
     /**
-     * Sets label
+     * 设置标签
      *
      * @param newLabel the label to set
      */
@@ -288,7 +311,7 @@ public class WheelView extends View {
     }
 
     /**
-     * Adds wheel changing listener
+     * 添加 WheelView 选择的元素改变监听器
      *
      * @param listener the listener
      */
@@ -296,8 +319,9 @@ public class WheelView extends View {
         changingListeners.add(listener);
     }
 
+
     /**
-     * Removes wheel changing listener
+     * 移除 WheelView 元素改变监听器
      *
      * @param listener the listener
      */
@@ -305,11 +329,12 @@ public class WheelView extends View {
         changingListeners.remove(listener);
     }
 
+
     /**
-     * Notifies changing listeners
+     * 回调元素改变监听器集合的元素改变监听器元素的元素改变方法
      *
-     * @param oldValue the old wheel value
-     * @param newValue the new wheel value
+     * @param oldValue 旧的 WheelView选中的值
+     * @param newValue 新的 WheelView选中的值
      */
     protected void notifyChangingListeners(int oldValue, int newValue) {
         for (OnWheelChangedListener listener : changingListeners) {
@@ -318,7 +343,7 @@ public class WheelView extends View {
     }
 
     /**
-     * Adds wheel scrolling listener
+     * 添加 WheelView 滚动监听器
      *
      * @param listener the listener
      */
@@ -326,8 +351,9 @@ public class WheelView extends View {
         scrollingListeners.add(listener);
     }
 
+
     /**
-     * Removes wheel scrolling listener
+     * 移除 WheelView 滚动监听器
      *
      * @param listener the listener
      */
@@ -336,7 +362,7 @@ public class WheelView extends View {
     }
 
     /**
-     * Notifies listeners about starting scrolling
+     * 通知监听器开始滚动
      */
     protected void notifyScrollingListenersAboutStart() {
         for (OnWheelScrollListener listener : scrollingListeners) {
@@ -345,28 +371,32 @@ public class WheelView extends View {
     }
 
     /**
-     * Notifies listeners about ending scrolling
+     * 通知监听器结束滚动
      */
     protected void notifyScrollingListenersAboutEnd() {
         for (OnWheelScrollListener listener : scrollingListeners) {
+            //回调开始滚动方法
             listener.onScrollingFinished(this);
         }
     }
 
+
     /**
-     * Gets current value
+     * 获取当前选中元素的索引
      *
-     * @return the current value
+     * @return 当前元素索引
      */
     public int getCurrentItem() {
         return currentItem;
     }
 
     /**
-     * Sets the current item. Does nothing when index is wrong.
+     * 设置当前元素的位置, 如果索引是错误的 不进行任何操作
+     * -- 需要考虑该 WheelView 是否能循环
+     * -- 根据是否需要滚动动画来确定是 ①滚动到目的位置 还是 ②晴空所有条目然后重绘
      *
-     * @param index    the item index
-     * @param animated the animation flag
+     * @param index    要设置的元素索引值
+     * @param animated 动画标志位
      */
     public void setCurrentItem(int index, boolean animated) {
         if (adapter == null || adapter.getItemsCount() == 0) {
@@ -399,26 +429,27 @@ public class WheelView extends View {
     }
 
     /**
-     * Sets the current item w/o animation. Does nothing when index is wrong.
+     * 设置当前选中的条目, 没有动画, 当索引出错不做任何操作
      *
-     * @param index the item index
+     * @param index 要设置的索引
      */
     public void setCurrentItem(int index) {
         setCurrentItem(index, false);
     }
 
     /**
-     * Tests if wheel is cyclic. That means before the 1st item there is shown
-     * the last one
+     * 获取 WheelView 是否可以循环
+     * -- 如果可循环 : 第一个之前是最后一个, 最后一个之后是第一个;
+     * -- 如果不可循环 : 到第一个就不能上翻, 最后一个不能下翻
      *
-     * @return true if wheel is cyclic
+     * @return
      */
     public boolean isCyclic() {
         return isCyclic;
     }
 
     /**
-     * Set wheel cyclic flag
+     * 设置 WheelView 循环标志
      *
      * @param isCyclic the flag to set
      */
@@ -430,7 +461,8 @@ public class WheelView extends View {
     }
 
     /**
-     * Invalidates layouts
+     * 使布局无效
+     * 将 选中条目 和 普通条目设置为 null, 滚动位置设置为0
      */
     private void invalidateLayouts() {
         itemsLayout = null;
@@ -439,49 +471,58 @@ public class WheelView extends View {
     }
 
     /**
-     * Initializes resources
+     * 初始化资源
      */
     private void initResourcesIfNecessary() {
         if (itemsPaint == null) {
-            itemsPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
-            float density = getResources().getDisplayMetrics().density;
-            itemsPaint.setTextSize((int) (TEXT_SIZE * density));
+            itemsPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG
+                    | Paint.FAKE_BOLD_TEXT_FLAG);
+            // itemsPaint.density = getResources().getDisplayMetrics().density;
+            itemsPaint.setTextSize(TEXT_SIZE);
         }
 
         if (valuePaint == null) {
-            valuePaint = new TextPaint(Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG | Paint.DITHER_FLAG);
-            float density = getResources().getDisplayMetrics().density;
-            valuePaint.setTextSize((int) (TEXT_SIZE * density));
+            valuePaint = new TextPaint(Paint.ANTI_ALIAS_FLAG
+                    | Paint.FAKE_BOLD_TEXT_FLAG | Paint.DITHER_FLAG);
+            // valuePaint.density = getResources().getDisplayMetrics().density;
+            valuePaint.setTextSize(TEXT_SIZE);
             valuePaint.setShadowLayer(0.1f, 0, 0.1f, 0xFFC0C0C0);
         }
 
         if (centerDrawable == null) {
-            centerDrawable = getContext().getResources().getDrawable(R.drawable.wheel_val);
+            centerDrawable = getContext().getResources().getDrawable(
+                    R.drawable.wheel_val);
         }
 
         if (topShadow == null) {
-            topShadow = new GradientDrawable(Orientation.TOP_BOTTOM, SHADOWS_COLORS);
+            topShadow = new GradientDrawable(Orientation.TOP_BOTTOM,
+                    SHADOWS_COLORS);
         }
 
         if (bottomShadow == null) {
-            bottomShadow = new GradientDrawable(Orientation.BOTTOM_TOP, SHADOWS_COLORS);
+            bottomShadow = new GradientDrawable(Orientation.BOTTOM_TOP,
+                    SHADOWS_COLORS);
         }
 
-        // setBackgroundResource(R.drawable.wheel_bg);
+         /*
+         * 设置 View 组件的背景
+         */
+        setBackgroundResource(R.drawable.wheel_bg);
     }
 
     /**
-     * Calculates desired height for layout
+     * 计算布局期望的高度
      *
-     * @param layout the source layout
-     * @return the desired layout height
+     * @param layout 组件的布局的
+     * @return 布局需要的高度
      */
     private int getDesiredHeight(Layout layout) {
         if (layout == null) {
             return 0;
         }
 
-        int desired = getItemHeight() * visibleItems - ITEM_OFFSET * 2 - ADDITIONAL_ITEM_HEIGHT;
+        int desired = getItemHeight() * visibleItems - ITEM_OFFSET * 2
+                - ADDITIONAL_ITEM_HEIGHT;
 
         // Check against our minimum height
         desired = Math.max(desired, getSuggestedMinimumHeight());
@@ -490,10 +531,10 @@ public class WheelView extends View {
     }
 
     /**
-     * Returns text item by index
+     * 根据条目获取字符串
      *
-     * @param index the item index
-     * @return the item or null
+     * @param index 条目索引
+     * @return 条目显示的字符串
      */
     private String getTextItem(int index) {
         if (adapter == null || adapter.getItemsCount() == 0) {
@@ -513,10 +554,11 @@ public class WheelView extends View {
     }
 
     /**
-     * Builds text depending on current value
+     * 根据当前值创建 字符串
      *
-     * @param useCurrentValue
+     * @param useCurrentValue 是否在滚动
      * @return the text
+     * 生成的字符串
      */
     private String buildText(boolean useCurrentValue) {
         StringBuilder itemsText = new StringBuilder();
@@ -538,9 +580,9 @@ public class WheelView extends View {
     }
 
     /**
-     * Returns the max item length that can be present
+     * 返回 条目的字符串
      *
-     * @return the max length
+     * @return 条目最大宽度
      */
     private int getMaxTextLength() {
         WheelAdapter adapter = getAdapter();
@@ -548,6 +590,7 @@ public class WheelView extends View {
             return 0;
         }
 
+        //如果获取的最大条目宽度不为 -1, 可以直接返回该条目宽度
         int adapterLength = adapter.getMaximumLength();
         if (adapterLength > 0) {
             return adapterLength;
@@ -555,10 +598,14 @@ public class WheelView extends View {
 
         String maxText = null;
         int addItems = visibleItems / 2;
-        for (int i = Math.max(currentItem - addItems, 0); i < Math.min(currentItem + visibleItems, adapter.getItemsCount()
-        ); i++) {
+        /*
+         * 遍历当前显示的条目, 获取字符串长度最长的那个, 返回这个最长的字符串长度
+         */
+        for (int i = Math.max(currentItem - addItems, 0); i < Math.min(
+                currentItem + visibleItems, adapter.getItemsCount()); i++) {
             String text = adapter.getItem(i);
-            if (text != null && (maxText == null || maxText.length() < text.length())) {
+            if (text != null
+                    && (maxText == null || maxText.length() < text.length())) {
                 maxText = text;
             }
         }
@@ -567,45 +614,62 @@ public class WheelView extends View {
     }
 
     /**
-     * Returns height of wheel item
+     * 获取每个条目的高度
      *
-     * @return the item height
+     * @return 条目的高度
      */
     private int getItemHeight() {
+        //如果条目高度不为 0, 直接返回
         if (itemHeight != 0) {
             return itemHeight;
+            //如果条目的高度为 0, 并且普通条目布局不为null, 条目个数大于 2
         } else if (itemsLayout != null && itemsLayout.getLineCount() > 2) {
+             /*
+             * itemsLayout.getLineTop(2) : 获取顶部第二行上面的垂直(y轴)位置, 如果行数等于
+             */
             itemHeight = itemsLayout.getLineTop(2) - itemsLayout.getLineTop(1);
             return itemHeight;
         }
-
+        //如果上面都不符合, 使用整体高度处以 显示条目数
         return getHeight() / visibleItems;
     }
 
     /**
-     * Calculates control width and creates text layouts
+     * 计算宽度并创建文字布局
      *
-     * @param widthSize the input layout width
-     * @param mode      the layout mode
-     * @return the calculated control width
+     * @param widthSize 输入的布局宽度
+     * @param mode      布局模式
+     * @return 计算的宽度
      */
     private int calculateLayoutWidth(int widthSize, int mode) {
         initResourcesIfNecessary();
 
         int width = widthSize;
-
+        //获取最长的条目显示字符串字符个数
         int maxLength = getMaxTextLength();
         if (maxLength > 0) {
-            float textWidth = (float) Math.ceil(Layout.getDesiredWidth("0", itemsPaint));
+               /*
+             * 使用方法 FloatMath.ceil() 方法有以下警告
+             * Use java.lang.Math#ceil instead of android.util.FloatMath#ceil() since it is faster as of API 8
+             */
+            //float textWidth = FloatMath.ceil(Layout.getDesiredWidth("0", itemsPaint));
+            //向上取整  计算一个字符串宽度
+            float textWidth = (float) Math.ceil(Layout.getDesiredWidth("0",
+                    itemsPaint));
+            //获取字符串总的宽度
             itemsWidth = (int) (maxLength * textWidth);
         } else {
+
             itemsWidth = 0;
         }
+        //总宽度加上一些间距
         itemsWidth += ADDITIONAL_ITEMS_SPACE; // make it some more
 
+        //计算 label 的长度
         labelWidth = 0;
         if (label != null && label.length() > 0) {
-            labelWidth = (int) Math.ceil(Layout.getDesiredWidth(label, valuePaint));
+            labelWidth = (int) (float) Math.ceil(Layout.getDesiredWidth(label,
+                    valuePaint));
         }
 
         boolean recalculate = false;
@@ -634,7 +698,8 @@ public class WheelView extends View {
                 itemsWidth = labelWidth = 0;
             }
             if (labelWidth > 0) {
-                double newWidthItems = (double) itemsWidth * pureWidth / (itemsWidth + labelWidth);
+                double newWidthItems = (double) itemsWidth * pureWidth
+                        / (itemsWidth + labelWidth);
                 itemsWidth = (int) newWidthItems;
                 labelWidth = pureWidth - itemsWidth;
             } else {
@@ -650,23 +715,54 @@ public class WheelView extends View {
     }
 
     /**
-     * Creates layouts
+     * 创建布局
      *
-     * @param widthItems width of items layout
-     * @param widthLabel width of label layout
+     * @param widthItems 布局条目宽度
+     * @param widthLabel label 宽度
      */
-    private void createLayouts(int widthItems, int widthLabel) {
+    private void createLayouts(int widthItems, int widthLabel) { /*
+         * 创建普通条目布局
+         * 如果 普通条目布局 为 null 或者 普通条目布局的宽度 大于 传入的宽度, 这时需要重新创建布局
+         * 如果 普通条目布局存在, 并且其宽度小于传入的宽度, 此时需要将
+         */
+
         if (itemsLayout == null || itemsLayout.getWidth() > widthItems) {
-            itemsLayout = new StaticLayout(buildText(isScrollingPerformed), itemsPaint, widthItems, widthLabel > 0 ?
-                    Layout.Alignment.ALIGN_OPPOSITE : Layout.Alignment.ALIGN_CENTER, 1, ADDITIONAL_ITEM_HEIGHT, false);
+             /*
+             * android.text.StaticLayout.StaticLayout(
+             * CharSequence source, TextPaint paint,
+             * int width, Alignment align,
+             * float spacingmult, float spacingadd, boolean includepad)
+             * 传入参数介绍 :
+             * CharSequence source : 需要分行显示的字符串
+             * TextPaint paint : 绘制字符串的画笔
+             * int width : 条目的宽度
+             * Alignment align : Layout 的对齐方式, ALIGN_CENTER 居中对齐, ALIGN_NORMAL 左对齐, Alignment.ALIGN_OPPOSITE 右对齐
+             * float spacingmult : 行间距, 1.5f 代表 1.5 倍字体高度
+             * float spacingadd : 基础行距上增加多少 , 真实行间距 等于 spacingmult 和 spacingadd 的和
+             * boolean includepad :
+             */
+            itemsLayout = new StaticLayout(buildText(isScrollingPerformed),
+                    itemsPaint, widthItems,
+                    widthLabel > 0 ? Layout.Alignment.ALIGN_OPPOSITE
+                            : Layout.Alignment.ALIGN_CENTER, 1,
+                    ADDITIONAL_ITEM_HEIGHT, false);
         } else {
+
+            //调用 Layout 内置的方法 increaseWidthTo 将宽度提升到指定的宽度
             itemsLayout.increaseWidthTo(widthItems);
         }
-
-        if (!isScrollingPerformed && (valueLayout == null || valueLayout.getWidth() > widthItems)) {
-            String text = getAdapter() != null ? getAdapter().getItem(currentItem) : null;
-            valueLayout = new StaticLayout(text != null ? text : "", valuePaint, widthItems, widthLabel > 0 ? Layout
-                    .Alignment.ALIGN_OPPOSITE : Layout.Alignment.ALIGN_CENTER, 1, ADDITIONAL_ITEM_HEIGHT, false);
+        /*
+         * 创建选中条目
+         */
+        if (!isScrollingPerformed
+                && (valueLayout == null || valueLayout.getWidth() > widthItems)) {
+            String text = getAdapter() != null ? getAdapter().getItem(
+                    currentItem) : null;
+            valueLayout = new StaticLayout(text != null ? text : "",
+                    valuePaint, widthItems,
+                    widthLabel > 0 ? Layout.Alignment.ALIGN_OPPOSITE
+                            : Layout.Alignment.ALIGN_CENTER, 1,
+                    ADDITIONAL_ITEM_HEIGHT, false);
         } else if (isScrollingPerformed) {
             valueLayout = null;
         } else {
@@ -675,7 +771,8 @@ public class WheelView extends View {
 
         if (widthLabel > 0) {
             if (labelLayout == null || labelLayout.getWidth() > widthLabel) {
-                labelLayout = new StaticLayout(label, valuePaint, widthLabel, Layout.Alignment.ALIGN_NORMAL, 1,
+                labelLayout = new StaticLayout(label, valuePaint, widthLabel,
+                        Layout.Alignment.ALIGN_NORMAL, 1,
                         ADDITIONAL_ITEM_HEIGHT, false);
             } else {
                 labelLayout.increaseWidthTo(widthLabel);
@@ -685,6 +782,7 @@ public class WheelView extends View {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        //获取宽度 和 高度的模式 和 大小
         int widthMode = MeasureSpec.getMode(widthMeasureSpec);
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
@@ -728,7 +826,7 @@ public class WheelView extends View {
         }
 
         drawCenterRect(canvas);
-        // drawShadows(canvas);
+        drawShadows(canvas);
     }
 
     /**
@@ -740,20 +838,24 @@ public class WheelView extends View {
         topShadow.setBounds(0, 0, getWidth(), getHeight() / visibleItems);
         topShadow.draw(canvas);
 
-        bottomShadow.setBounds(0, getHeight() - getHeight() / visibleItems, getWidth(), getHeight());
+        bottomShadow.setBounds(0, getHeight() - getHeight() / visibleItems,
+                getWidth(), getHeight());
         bottomShadow.draw(canvas);
     }
 
+
     /**
-     * Draws value and label layout
+     * 绘制选中条目
      *
-     * @param canvas the canvas for drawing
+     * @param canvas 画布
      */
     private void drawValue(Canvas canvas) {
         valuePaint.setColor(VALUE_TEXT_COLOR);
+        //将当前 View 状态属性值 转为整型集合, 赋值给 普通条目布局的绘制属性
         valuePaint.drawableState = getDrawableState();
 
         Rect bounds = new Rect();
+        //获取选中条目布局的边界
         itemsLayout.getLineBounds(visibleItems / 2, bounds);
 
         // draw label
@@ -774,9 +876,9 @@ public class WheelView extends View {
     }
 
     /**
-     * Draws items
+     * 绘制普通条目
      *
-     * @param canvas the canvas for drawing
+     * @param canvas 画布
      */
     private void drawItems(Canvas canvas) {
         canvas.save();
@@ -791,40 +893,52 @@ public class WheelView extends View {
         canvas.restore();
     }
 
+
     /**
-     * Draws rect for current value
+     * 绘制当前选中条目的背景图片
      *
-     * @param canvas the canvas for drawing
+     * @param canvas 画布
      */
     private void drawCenterRect(Canvas canvas) {
         int center = getHeight() / 2;
         int offset = getItemHeight() / 2;
         Paint paint = new Paint();
         paint.setColor(Color.GRAY);
-        // centerDrawable.setBounds(0, center - offset, getWidth(), center +
-        // offset);
-        // centerDrawable.draw(canvas);
+        //		centerDrawable.setBounds(0, center - offset, getWidth(), center
+        //				+ offset);
+        //		centerDrawable.draw(canvas);
         canvas.drawLine(0, center - offset, getWidth(), center - offset, paint);
         canvas.drawLine(0, center + offset, getWidth(), center + offset, paint);
     }
 
+    /*
+        * 继承自 View 的触摸事件, 当出现触摸事件的时候, 就会回调该方法
+        * (non-Javadoc)
+        * @see android.view.View#onTouchEvent(android.view.MotionEvent)
+        */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         WheelAdapter adapter = getAdapter();
         if (adapter == null) {
             return true;
         }
-
-        if (!gestureDetector.onTouchEvent(event) && event.getAction() == MotionEvent.ACTION_UP) {
+ /*
+         * gestureDetector.onTouchEvent(event) : 分析给定的动作, 如果可用, 调用 手势检测器的 onTouchEvent 方法
+         * -- 参数解析 : ev , 触摸事件
+         * -- 返回值 : 如果手势监听器成功执行了该方法, 返回true, 如果执行出现意外 返回 false;
+         */
+        if (!gestureDetector.onTouchEvent(event)
+                && event.getAction() == MotionEvent.ACTION_UP) {
             justify();
         }
         return true;
     }
 
     /**
-     * Scrolls the wheel
+     * 滚动 WheelView
      *
-     * @param delta the scrolling value
+     * @param delta
+     *            滚动的值
      */
     private void doScroll(int delta) {
         scrollingOffset += delta;
@@ -868,7 +982,6 @@ public class WheelView extends View {
 
     // gesture listener
     private SimpleOnGestureListener gestureListener = new SimpleOnGestureListener() {
-        @Override
         public boolean onDown(MotionEvent e) {
             if (isScrollingPerformed) {
                 scroller.forceFinished(true);
@@ -878,19 +991,20 @@ public class WheelView extends View {
             return false;
         }
 
-        @Override
-        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        public boolean onScroll(MotionEvent e1, MotionEvent e2,
+                                float distanceX, float distanceY) {
             startScrolling();
             doScroll((int) -distanceY);
             return true;
         }
-
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+                               float velocityY) {
             lastScrollY = currentItem * getItemHeight() + scrollingOffset;
-            int maxY = isCyclic ? 0x7FFFFFFF : adapter.getItemsCount() * getItemHeight();
+            int maxY = isCyclic ? 0x7FFFFFFF : adapter.getItemsCount()
+                    * getItemHeight();
             int minY = isCyclic ? -maxY : 0;
-            scroller.fling(0, lastScrollY, 0, (int) -velocityY / 2, 0, 0, minY, maxY);
+            scroller.fling(0, lastScrollY, 0, (int) -velocityY / 2, 0, 0, minY,
+                    maxY);
             setNextMessage(MESSAGE_SCROLL);
             return true;
         }
@@ -898,7 +1012,6 @@ public class WheelView extends View {
 
     // Messages
     private final int MESSAGE_SCROLL = 0;
-
     private final int MESSAGE_JUSTIFY = 1;
 
     /**
@@ -921,7 +1034,6 @@ public class WheelView extends View {
 
     // animation handler
     private Handler animationHandler = new Handler() {
-        @Override
         public void handleMessage(Message msg) {
             scroller.computeScrollOffset();
             int currY = scroller.getCurrY();
@@ -950,7 +1062,7 @@ public class WheelView extends View {
     /**
      * Justifies wheel
      */
-    public void justify() {
+    private void justify() {
         if (adapter == null) {
             return;
         }
@@ -958,8 +1070,10 @@ public class WheelView extends View {
         lastScrollY = 0;
         int offset = scrollingOffset;
         int itemHeight = getItemHeight();
-        boolean needToIncrease = offset > 0 ? currentItem < adapter.getItemsCount() : currentItem > 0;
-        if ((isCyclic || needToIncrease) && Math.abs((float) offset) > (float) itemHeight / 2) {
+        boolean needToIncrease = offset > 0 ? currentItem < adapter
+                .getItemsCount() : currentItem > 0;
+        if ((isCyclic || needToIncrease)
+                && Math.abs((float) offset) > (float) itemHeight / 2) {
             if (offset < 0)
                 offset += itemHeight + MIN_DELTA_FOR_SCROLLING;
             else
@@ -997,9 +1111,10 @@ public class WheelView extends View {
 
     /**
      * Scroll the wheel
+     * <p>
+     * items to scroll
      *
-     * @param itemsToScroll items to scroll
-     * @param time          scrolling duration
+     * @param time scrolling duration
      */
     public void scroll(int itemsToScroll, int time) {
         scroller.forceFinished(true);
@@ -1011,33 +1126,6 @@ public class WheelView extends View {
         setNextMessage(MESSAGE_SCROLL);
 
         startScrolling();
-    }
-
-    public interface OnWheelChangedListener {
-        /**
-         * Callback method to be invoked when current item changed
-         *
-         * @param wheel    the wheel view whose state has changed
-         * @param oldValue the old value of current item
-         * @param newValue the new value of current item
-         */
-        void onChanged(WheelView wheel, int oldValue, int newValue);
-    }
-
-    public interface OnWheelScrollListener {
-        /**
-         * Callback method to be invoked when scrolling started.
-         *
-         * @param wheel the wheel view whose state has changed.
-         */
-        void onScrollingStarted(WheelView wheel);
-
-        /**
-         * Callback method to be invoked when scrolling ended.
-         *
-         * @param wheel the wheel view whose state has changed.
-         */
-        void onScrollingFinished(WheelView wheel);
     }
 
 }

@@ -6,8 +6,8 @@ import com.App;
 import com.base.helper.RxSchedulers;
 import com.base.util.LogUtils;
 import com.base.util.MD5Util;
+import com.base.util.SpUtil;
 import com.base.util.WiFiIpUtils;
-import com.entity.BaseRespnseData;
 import com.entity.UserInfo;
 import com.ui.gank.R;
 
@@ -15,7 +15,6 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 
 /**
  * Created by chenbaolin on 2017/4/16.
@@ -72,38 +71,34 @@ public class LoginPresenter extends LoginContrat.Presenter {
     @Override
     public void login(String userPhone, String code) {
         //        Am4MNbd6cl2FXhZx75tNVXv2_ZPk6hyiyQIbHjPSi30L
-        mModel.login(userPhone, timestamp, "1234", "Am4MNbd6cl2FXhZx75tNVXv2_ZPk6hyiyQIbHjPSi30L", wifiip, "02", code,
+        Disposable disposable = mModel.login(userPhone, timestamp, "1234", "Am4MNbd6cl2FXhZx75tNVXv2_ZPk6hyiyQIbHjPSi30L",
+                wifiip,
+                "02", code,
                 MD5Util.md5(userPhone + "al" + timestamp + "1234" + wifiip + code).toUpperCase())
-                .subscribe(new Consumer<BaseRespnseData<UserInfo>>() {
-                    @Override
-                    public void accept(BaseRespnseData<UserInfo> userInfo) throws Exception {
-                        if (userInfo != null) {
-
-                            LogUtils.d("userInfo!=null:" + userInfo.getTokenStr());
-                        }
-                    }
+                .subscribe(result -> {
+                    mView.onSucceed(result.getResponseData());
+                    UserInfo user = result.getResponseData().getAppUser();
+                    SpUtil.put(App.getAppContext(),"userInfo",user);
                 });
+        addSubscription(disposable);
     }
 
     @Override
     public void sendeCode(String userPhone) {
-        //        Disposable disposable = mModel.sendCode(userPhone, 2 + "")
-        //                .subscribe(result -> {
-        //                    if (result != null && result.getResponseCode() == 20000) {
-        //                        LogUtils.d(result.getResponseDescription());
-        //                        mView.onSucceed(result);
-        //                    } else {
-        //                        mView.onFail("验证码获取失败！");
-        //                    }
-        //                });
-        //        addSubscription(disposable);
-
-        //        mModel.sendCode(userPhone,"2")
-        //                .subscribe(new BaseSubscriber<HttpResult>());
+        Disposable disposable = mModel.sendCode(userPhone, 2 + "")
+                .subscribe(result -> {
+                    if (result != null && result.getResponseCode() == 20000) {
+                        LogUtils.d(result.getResponseDescription());
+                        mView.onSucceed(result);
+                    } else {
+                        mView.onFail("验证码获取失败！");
+                    }
+                });
+        addSubscription(disposable);
     }
 
     /**
-     * 点击获取验证码，10S倒计时，利用Rxjava进行线程切换
+     * 点击获取验证码，60S倒计时，利用Rxjava进行线程切换
      */
     public void getSureCode(Button view) {
         final long count = 60;

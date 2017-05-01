@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.base.exception.APIException;
 import com.jakewharton.retrofit2.adapter.rxjava2.HttpException;
 import com.ui.gank.R;
 

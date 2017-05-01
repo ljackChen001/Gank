@@ -1,6 +1,7 @@
 package com.base;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -32,11 +33,18 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ActivityCollector.getInstance().addActivity(new WeakReference<>(this));
         mContext = this;
         View rootView = getLayoutInflater().inflate(this.setLayoutResouceId(), null, false);
         setContentView(setLayoutResouceId(), rootView);
         unbinder = ButterKnife.bind(this);
-        StatusBarUtil.setColor(this, getResources().getColor(R.color.color_48b54c), 0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            StatusBarUtil.setColor(this, getResources().getColor(R.color.color_48b54c), 0);
+        }
+        Bundle extras = getIntent().getExtras();
+        if (null != extras) {
+            getBundleExtras(extras);
+        }
         if (onCreatePresenter() != null) {
             mPresenter = onCreatePresenter();
         }
@@ -62,11 +70,7 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
         return container;
     }
 
-    /**
-     * 替代onCreate的使用
-     */
     protected abstract int setLayoutResouceId();
-
     /**
      * 初始化view
      */

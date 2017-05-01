@@ -1,5 +1,6 @@
 package com.ui.login;
 
+import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.widget.Button;
@@ -11,6 +12,7 @@ import com.base.util.LogUtils;
 import com.base.util.NetWorkUtil;
 import com.base.util.SnackbarUtils;
 import com.base.util.ValidateUtils;
+import com.entity.BaseRespnseData;
 import com.entity.UserInfo;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
@@ -85,30 +87,21 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
     }
 
     @Override
-    public void onSucceed(Object result) {
-
-//        HttpResult httpResult= (HttpResult) result;
-//        BaseRespnseData respnseData= (BaseRespnseData) httpResult.getResponseData();
-
-        UserInfo userInfo= (UserInfo) result;
-        LogUtils.d(userInfo.getUserMobile()+"ssssss");
+    protected void getBundleExtras(Bundle extras) {
 
     }
-//        HttpResult httpResult= (HttpResult) result;
-//        BaseRespnseData baseRespnseData= (BaseRespnseData) httpResult.getResponseData();
-//        UserInfo userInfo= (UserInfo) baseRespnseData.getData();
-//        LogUtils.d("成功1：" + userInfo.getUserMobile());
-//        BaseRespnseData httpResult = (BaseRespnseData) ((HttpResult) result).getResponseData();
-//        LogUtils.d("成功：" + ((UserInfo) httpResult.getData()).getUserMobile() + "");
-//        HttpResult<BaseRespnseData<UserInfo>> loginResult = (HttpResult<BaseRespnseData<UserInfo>>) result;
-//                    LogUtils.d("成功了2：" + loginResult.getResponseData().getData().getUserMobile() + "");
-//        if (httpResult.getData() instanceof UserInfo) {
-//            HttpResult<BaseRespnseData<UserInfo>> loginResult = (HttpResult<BaseRespnseData<UserInfo>>) result;
-//            LogUtils.d("成功了2：" + ((UserInfo) httpResult.getData()).getUserMobile() + "");
-//            ActivityCollector.getInstance().finishActivity();
-//        }
 
+    @Override
+    public void onSucceed(Object result) {
+        BaseRespnseData respnseData = (BaseRespnseData) result;
+        if (respnseData != null) {
+            UserInfo userInfo = respnseData.getAppUser();
+            LogUtils.d(userInfo.getDeviceToken() + "--" + userInfo.getUserMobile());
+        }
+        //            ActivityCollector.getInstance().finishActivity();
+        //        }
 
+    }
 
     @Override
     public void onFail(String err) {

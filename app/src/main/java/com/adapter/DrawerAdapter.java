@@ -2,6 +2,7 @@ package com.adapter;
 
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +10,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.App;
-import com.bumptech.glide.Glide;
+import com.Constants;
+import com.base.util.GlideUtils;
+import com.base.util.LogUtils;
+import com.base.util.SpUtil;
+import com.entity.UserInfo;
 import com.ui.gank.R;
 import com.view.widget.CircleImageView;
 
@@ -25,9 +30,13 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.DrawerView
     private static final int TYPE_DIVIDER = 0;
     private static final int TYPE_NORMAL = 1;
     private static final int TYPE_HEADER = 2;
-
+    public UserInfo userInfo;
     private List<DrawerItem> dataList = Arrays.asList(
-            new DrawerItemHeader("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1492292572099&di=6cf7e54a0c3627a119531abc346b01cd&imgtype=0&src=http%3A%2F%2Fimgsrc.baidu.com%2Fbaike%2Fpic%2Fitem%2Fa6efce1b9d16fdfac666d143b08f8c5494ee7b10.jpg",R.string.drawer_menu_login),
+            new DrawerItemHeader("https://timgsa.baidu" +
+                    ".com/timg?image&quality=80&size=b9999_10000&sec=1492292572099&di=6cf7e54a0c3627a119531abc346b01cd" +
+                    "&imgtype=0&src=http%3A%2F%2Fimgsrc.baidu.com" +
+                    "%2Fbaike%2Fpic%2Fitem%2Fa6efce1b9" +
+                    "d16fdfac666d143b08f8c5494ee7b10.jpg", "ss"),
             new DrawerItemNormal(R.drawable.ic_menu_order, R.string.drawer_menu_rental_order),
             new DrawerItemNormal(R.drawable.ic_menu_my_vehicle, R.string.drawer_menu_my_vehicle),
             new DrawerItemNormal(R.drawable.ic_menu_order, R.string.drawer_menu_tenant_order),
@@ -95,11 +104,26 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.DrawerView
                 }
             });
         } else if (holder instanceof HeaderViewHolder) {
+            if (SpUtil.contains(App.getAppContext(), "userInfo")) {
+                userInfo = SpUtil.get(App.getAppContext(), "userInfo", UserInfo.class);
+                LogUtils.d(userInfo.getUserMobile() + "'");
+            }
+
             HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
             final DrawerItemHeader itemHeader = (DrawerItemHeader) item;
-            Glide.with(App.getAppContext()).load(itemHeader.headerIcon).into(headerViewHolder.sdv_icon);
-//            headerViewHolder.sdv_icon.setBackgroundResource(itemHeader.headerIcon);
-            headerViewHolder.tv_login.setText(itemHeader.login);
+
+            if (userInfo != null) {
+                if (!TextUtils.isEmpty(userInfo.getUserMobile())) {
+                    headerViewHolder.tv_login.setText(userInfo.getUserMobile());
+                } else if (!TextUtils.isEmpty(userInfo.getUserImg())) {
+                    GlideUtils.loadImage(App.getAppContext(),
+                            Constants.FILE_URL + userInfo.getUserImg(), headerViewHolder.sdv_icon);
+                }
+            } else {
+                GlideUtils.loadImage(App.getAppContext(), R.drawable.header, headerViewHolder.sdv_icon);
+                headerViewHolder.tv_login.setText(R.string.drawer_menu_login);
+            }
+
             headerViewHolder.view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -120,6 +144,7 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.DrawerView
 
     public interface OnItemClickListener {
         void itemClick(DrawerItemHeader drawerItemHeader);
+
         void itemClick(DrawerItemNormal drawerItemNormal);
     }
 
@@ -150,8 +175,9 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.DrawerView
     //头部item
     public class DrawerItemHeader implements DrawerItem {
         public String headerIcon;
-        public int login;
-        public DrawerItemHeader(@Nullable String headerIcon, int login) {
+        public String login;
+
+        public DrawerItemHeader(@Nullable String headerIcon, String login) {
             this.headerIcon = headerIcon;
             this.login = login;
         }

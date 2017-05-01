@@ -1,6 +1,11 @@
 package com.ui;
 
+import android.annotation.SuppressLint;
+import android.app.ActionBar;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
@@ -8,24 +13,37 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.App;
 import com.adapter.DrawerAdapter;
 import com.base.BaseActivity;
 import com.base.helper.RxBus;
 import com.base.util.ActivityCollector;
+import com.base.util.LogUtils;
+import com.base.util.SnackbarUtils;
+import com.base.util.SpUtil;
 import com.base.util.StatusBarUtil;
 import com.base.util.TimeUtils;
-import com.model.Gank;
+import com.entity.UserInfo;
+import com.jakewharton.rxbinding2.view.RxView;
 import com.ui.component.cityselect.PickCityActivity;
-import com.ui.component.pickerview.TimePickerDialog;
-import com.ui.component.pickerview.data.Type;
-import com.ui.component.wheelview.DateSelectWheel;
+import com.ui.component.wheelview.DateUtils;
+import com.ui.component.wheelview.JudgeDate;
+import com.ui.component.wheelview.ScreenInfo;
+import com.ui.component.wheelview.WheelWeekDate;
 import com.ui.gank.R;
 import com.ui.login.LoginActivity;
 import com.view.widget.GlideImageLoader;
@@ -33,13 +51,14 @@ import com.youth.banner.Banner;
 import com.youth.banner.BannerConfig;
 import com.youth.banner.Transformer;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
+import io.reactivex.functions.Consumer;
 
 public class MainActivity extends BaseActivity<MainPresenter> implements MainContract.View {
     @BindView(R.id.toolbar)
@@ -74,11 +93,16 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
     TextView tvWeekReturn;
     @BindView(R.id.layout_return_car)
     LinearLayout layoutReturnCar;
+    @BindView(R.id.btn_submit_oreder)
+    Button btnSubmitOreder;
     private long exitTime = 0;
-    private String currentTime;
-    TimePickerDialog mDialogMonthDayHourMinute;
-    private long tenYears;
-    SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private WheelWeekDate wheelWeekMainDate;
+    private String beginTime;
+    private int year, month, day, hours, minute;
+    private String startTime;//取车时间
+    private String endTime;//还车时间
+
+
     @Override
     public int setLayoutResouceId() {
         return R.layout.activity_main;
@@ -92,134 +116,70 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
         initAppBarTool();
         initDrawer();
         initBanner();
-        initTime();
-        tenYears = 3L * 365 * 1000 * 60 * 60 * 24L;
-        initPickTime();
+        initListener();
+        initData();
         citySelectLayout.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), PickCityActivity.class)));
+        btnSubmitOreder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //                mPresenter.getMyCollectCars();
+                LogUtils.d(SpUtil.get(App.getAppContext(), "token", "") + "");
+                //                LogUtils.d(SpUtil.get(App.getAppContext(), "userPhone", "") + "'");
 
+                if (SpUtil.contains(App.getAppContext(), "userInfo")) {
+                    UserInfo userInfo = SpUtil.get(App.getAppContext(), "userInfo", UserInfo
+                            .class);
+                    LogUtils.d("userInfo" + userInfo.getUserMobile() + "---" + userInfo.getUserCreateTime() + userInfo
+                            .getUserName());
+                }
+            }
+        });
 
     }
 
-    private void initPickTime() {
-//    mDialogAll = new TimePickerDialog.Builder()
-//                .setCallBack(this)
-//                .setCancelStringId("Cancel")
-//                .setSureStringId("Sure")
-//                .setTitleStringId("TimePicker")
-//                .setMonthText("月")
-//                .setDayText("日")
-//                .setHourText("时")
-//                .setMinuteText("分")
-//                .setCyclic(false)
-//                .setMinMillseconds(System.currentTimeMillis())
-//                .setMaxMillseconds(System.currentTimeMillis() + tenYears)
-//                .setCurrentMillseconds(System.currentTimeMillis())
-//                .setThemeColor(getResources().getColor(R.color.timepicker_dialog_bg))
-//                .setType(Type.MONTH_DAY_HOUR_MIN)
-//                .setWheelItemTextNormalColor(getResources().getColor(R.color.timetimepicker_default_text_color))
-//                .setWheelItemTextSelectorColor(getResources().getColor(R.color.timepicker_toolbar_bg))
-//                .setWheelItemTextSize(12)
-//                .build();
-//        mDialogYearMonth = new TimePickerDialog.Builder()
-//                .setType(Type.YEAR_MONTH)
-//                .setThemeColor(getResources().getColor(R.color.colorPrimary))
-//                .setCallBack(this)
-//                .build();
-//        mDialogYearMonthDay = new TimePickerDialog.Builder()
-//                .setType(Type.YEAR_MONTH_DAY)
-//                .setCallBack(this)
-//                .build();
-        mDialogMonthDayHourMinute = new TimePickerDialog.Builder()
-                .setType(Type.MONTH_DAY_HOUR_MIN)
-                .setCallBack(this::onDateSet)
-                .build();
-//        mDialogHourMinute = new TimePickerDialog.Builder()
-//                .setType(Type.HOURS_MINS)
-//                .setCallBack(this)
-//                .build();
-    }
-
-
-    private void initTime() {
-        currentTime = TimeUtils.getCurrentTimeInString();
-        layoutGetcarTime.setOnClickListener(v -> {
+    @SuppressLint({"WrongConstant", "SetTextI18n"})
+    private void initData() {
+        String time = DateUtils.currentMonth();
+        Calendar calendar = Calendar.getInstance();
+        if (JudgeDate.isDate(time, "MM-DD")) {
             try {
-                mDialogMonthDayHourMinute.show(getSupportFragmentManager(), "month_day_hour_minute");
-//                getCarTime();
+                calendar.setTime(new Date(time));
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        });
-        layoutReturnCar.setOnClickListener(v -> {
-            try {
-                returnCarTime();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        });
+        }
+        year = calendar.get(Calendar.YEAR);
+        month = calendar.get(Calendar.MONTH);
+        day = calendar.get(Calendar.DAY_OF_MONTH);
+        hours = calendar.get(Calendar.HOUR_OF_DAY);
+        minute = calendar.get(Calendar.MINUTE);
+
+        tvMonth.setText(DateUtils.getNowDay());
+        tvWeek.setText(DateUtils.getWeekString() + " " + DateUtils.getHour() + ":" + DateUtils.getMinute());
+        if (SpUtil.contains(App.getAppContext(), "userInfo")) {
+            UserInfo userInfo = SpUtil.get(App.getAppContext(), "userInfo", UserInfo.class);
+
+        }
     }
 
-    public void getCarTime() throws ParseException {
-        new DateSelectWheel(mContext, 1).setCallBack(params -> {
-            //            String str1 = params[0];//月日
-            //            String str2 = params[1];//周几
-            //            String str3 = params[2];//时
-            //            String str4 = params[3];//分
-            //            String strQutime = TimeUtils.getNowYear() + "-" + str1;
-            //            long lonQutine = TimeUtils.getStringToDate(strQutime) + DEFAULT_TIME;
-            //            tvMonthReturn.setText(TimeUtils.getMonthDay(lonQutine));
-            //            tvWeekReturn.setText(TimeUtils.getWeekString(lonQutine) + TimeUtils.getNowFen());
-            //            tvDay.setText("1");
-            //            String QuTime = str3 + ":" + str4;
-            //            long LongQuTime = TimeUtils.getHHmm(QuTime);
-            //            long sysoutTime = TimeUtils.getHHmm(TimeUtils.getNowFen());
-            //            if (LongQuTime - sysoutTime < 120 * 60 * 1000) {
-            //                tvMonth.setText(TimeUtils.getMonthDay(systime));
-            //                long time = TimeUtils.getHHmm(TimeUtils.getNowFen()) + 120 * 60 * 1000;
-            //                tvWeek.setText(TimeUtils.getWeekString(systime) + TimeUtils.getStringHHmm(time));
-            //                ToastUtil.show("取车时间应大于当前2小时");
-            //            } else {
-            //                tvMonth.setText(str1);
-            //                tvWeek.setText(str2 + str3 + ":" + str4);
-            //                returnCarTime();
-            //            }
-        });
+
+    private void initListener() {
+        //        currentTime = TimeUtils.getCurrentTimeInString();
+        //        layoutGetcarTime.setOnClickListener(v -> initPickTime(0));
+        //        layoutReturnCar.setOnClickListener(v -> initPickTime(1));
+        RxView.clicks(layoutGetcarTime).throttleFirst(1, TimeUnit.SECONDS)
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(Object o) throws Exception {
+                        layoutReturnCar.setClickable(false);
+                        initPickTime(0);
+                    }
+                });
+        RxView.clicks(layoutReturnCar).throttleFirst(1, TimeUnit.SECONDS)
+                .subscribe(o -> initPickTime(1));
+
     }
 
-    public void returnCarTime() throws ParseException {
-        new DateSelectWheel(mContext, 2).setCallBack(params -> {
-            //            String str1 = params[0];//月日
-            //            String str2 = params[1];//周几
-            //            String str3 = params[2];//时
-            //            String str4 = params[3];//分
-            //            String mTextquday = tvMonth.getText().toString();
-            //            String QuTime1 = tvWeek.getText().toString().substring(2);
-            //            long LongQuTime1 = TimeUtils.getStringToDateTime(TimeUtils.getNowYear() + "-" +
-            //                    mTextquday + " " + QuTime1);
-            //            long huanTime = TimeUtils.getStringToDateTime(TimeUtils.getNowYear() + "-" + str1 + " " +
-            //                    "" + str3 + ":" + str4);
-            //            String quday = mTextquday.substring(3);
-            //            String huanday = str1.substring(3);
-            //            if (huanTime - LongQuTime1 < 24 * 60 * 60 * 1000) {
-            //                ToastUtil.show("还车时间应大于取车时间24小时!");
-            //            } else {
-            //                if (huanTime - LongQuTime1 > 20 * 24 * 60 * 60 * 1000) {
-            //                    ToastUtil.show("还车时间不能超过20天");
-            //                } else {
-            //                    tvDay.setText((Integer.parseInt(huanday) - Integer.parseInt(quday)) + "");
-            //                    tvMonthReturn.setText(str1);
-            //                    tvWeekReturn.setText(str2 + str3 + ":" + str4);
-            //
-            //                }
-            //
-            //
-            //            }
-        });
-    }
-
-    /**
-     * 初始化轮播图
-     */
     private void initBanner() {
         List<String> images = new ArrayList<>();
         images.add("http://img.hb.aicdn.com/0598d3964e1c2842acc90786799237d2a4050d562190a-7e1Fzr_fw658");
@@ -273,11 +233,10 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
         drawerAdapter.setOnItemClickListener(new DrawerAdapter.OnItemClickListener() {
             @Override
             public void itemClick(DrawerAdapter.DrawerItemHeader drawerItemHeader) {
-                switch (drawerItemHeader.login) {
-                    case R.string.drawer_menu_login:
-                        startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-                        break;
+                if (drawerItemHeader.login.equals("登录")) {
+                    startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                 }
+                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
             }
 
             @Override
@@ -314,12 +273,17 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
     }
 
     @Override
+    protected void getBundleExtras(Bundle extras) {
+
+    }
+
+    @Override
     public void showDialog() {
 
     }
 
     @Override
-    public void onSucceed(Gank data) {
+    public void onSucceed(Object data) {
     }
 
     @Override
@@ -331,20 +295,99 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
     }
 
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
-            if (drawerlayout.isDrawerOpen(Gravity.LEFT)) {
-                drawerlayout.closeDrawers();
-            } else if ((System.currentTimeMillis() - exitTime) > 2000) {
-                Snackbar.make(rootlayout, "再按一次退出程序", 2000).show();
-                exitTime = System.currentTimeMillis();
-            } else {
-                ActivityCollector.getInstance().AppExit(this);
-            }
-            return true;
+    /**
+     * 先实现这个功能 有时间要把这个方法重构
+     *
+     * @param type
+     */
+    @SuppressLint({"WrongConstant", "SetTextI18n"})
+    private void initPickTime(int type) {
+        WindowManager manager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        Display defaultDisplay = manager.getDefaultDisplay();
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        defaultDisplay.getMetrics(outMetrics);
+        int width = outMetrics.widthPixels;
+        View menuView = LayoutInflater.from(this).inflate(R.layout.show_week_popup_window, null);
+        final PopupWindow mPopupWindow = new PopupWindow(menuView, width,
+                ActionBar.LayoutParams.WRAP_CONTENT);
+        ScreenInfo screenInfoDate = new ScreenInfo(this);
+        wheelWeekMainDate = new WheelWeekDate(menuView, true);
+        wheelWeekMainDate.screenheight = screenInfoDate.getHeight();
+        wheelWeekMainDate.initDateTimePicker(year, month, day, hours, minute);
+        mPopupWindow.setAnimationStyle(R.style.AnimationPreview);
+        mPopupWindow.setTouchable(true);
+        mPopupWindow.setFocusable(true);
+        mPopupWindow.setBackgroundDrawable(new BitmapDrawable());
+        mPopupWindow.showAtLocation(layoutGetcarTime, Gravity.BOTTOM, 0, 0);
+        mPopupWindow.setOnDismissListener(() -> backgroundAlpha(1f));
+        backgroundAlpha(0.6f);
+        TextView tv_cancle = (TextView) menuView.findViewById(R.id.tv_cancle);
+        TextView tv_ensure = (TextView) menuView.findViewById(R.id.tv_ensure);
+        TextView tv_pop_title = (TextView) menuView.findViewById(R.id.tv_pop_title);
+        if (type == 0) {
+            tv_pop_title.setText("取车时间");
+        } else {
+            tv_pop_title.setText("还车时间");
         }
-        return super.onKeyDown(keyCode, event);
+        tv_cancle.setOnClickListener(arg0 -> mPopupWindow.dismiss());
+        tv_ensure.setOnClickListener(arg0 -> {
+            beginTime = wheelWeekMainDate.getTime();
+            LogUtils.d(beginTime + "----");
+            if (!TextUtils.isEmpty(beginTime)) {
+                LogUtils.d(beginTime + "||");
+                LogUtils.d(TimeUtils.getNowTime() + "|||");
+                LogUtils.d("2017-" + beginTime.substring(0, 5) + beginTime
+                        .substring(8, beginTime.length()) + "||||");
+                if (type == 0) {
+                    startTime = DateUtils.getYear() + "-" + beginTime.substring
+                            (0, 5) + beginTime.substring(8, beginTime.length());
+                    //2个小时时间差 true>2
+                    Boolean timeDifference = TimeUtils.compareTwoTime2(TimeUtils.getNowTime(),
+                            startTime, 2 * 60 * 60 * 1000);
+                    if (timeDifference) {
+                        tvMonth.setText(beginTime.substring(0, 5));
+                        tvWeek.setText(beginTime.substring(6, beginTime.length()));
+                        initPickTime(1);
+                    } else {
+                        mPopupWindow.dismiss();
+                        SnackbarUtils.showSnacker(rootlayout, "不能小于当前时间2个小时！");
+                    }
+                } else {
+                    LogUtils.d(beginTime + "===");
+                    endTime = DateUtils.getYear() + "-" + beginTime.substring
+                            (0, 5) + beginTime.substring(8, beginTime.length());
+                    //一个小时起租
+                    Boolean timeDifference = TimeUtils.compareTwoTime2(startTime,
+                            endTime, 60 * 60 * 1000);
+                    if (timeDifference) {
+                        tvMonthReturn.setText(beginTime.substring(0, 5));
+                        tvWeekReturn.setText(beginTime.substring(6, beginTime.length()));
+                        long str = TimeUtils.compareTwoTime2(startTime, endTime);
+                        LogUtils.d(str + "取余运算");
+                        if (str % (24 * 60 * 60 * 1000) > 0) {
+                            tvDay.setText(str / (24 * 60 * 60 * 1000) + 1 + "");
+                        } else {
+                            tvDay.setText(str / (24 * 60 * 60 * 1000) + "");
+                        }
+                    } else {
+                        mPopupWindow.dismiss();
+                        SnackbarUtils.showSnacker(rootlayout, "最少要租1个小时哦！");
+                    }
+
+                }
+
+            }
+            mPopupWindow.dismiss();
+            backgroundAlpha(1f);
+        });
+    }
+
+    public void backgroundAlpha(float bgAlpha) {
+        layoutReturnCar.setClickable(true);
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.alpha = bgAlpha;
+        getWindow().setAttributes(lp);
+
     }
 
     @Override
@@ -365,13 +408,19 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
         rxBus.clear();
     }
 
-    public void onDateSet(TimePickerDialog timePickerDialog, long millseconds) {
-        String text = getDateToString(millseconds);
-//        mTvTime.setText(text);
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+            if (drawerlayout.isDrawerOpen(Gravity.LEFT)) {
+                drawerlayout.closeDrawers();
+            } else if ((System.currentTimeMillis() - exitTime) > 2000) {
+                Snackbar.make(rootlayout, "再按一次退出程序", 2000).show();
+                exitTime = System.currentTimeMillis();
+            } else {
+                ActivityCollector.getInstance().AppExit(this);
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
-    public String getDateToString(long time) {
-        Date d = new Date(time);
-        return sf.format(d);
-    }
-
 }

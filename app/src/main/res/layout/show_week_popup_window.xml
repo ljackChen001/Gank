@@ -1,22 +1,23 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_alignParentBottom="true"
+              android:background="@android:color/white"
+              android:gravity="center_horizontal"
+              android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_alignParentBottom="true"
-        android:background="@android:color/white"
-        android:gravity="center_horizontal"
-        android:orientation="vertical" >
+        android:layout_height="230dp"
+        android:orientation="vertical"
+        >
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp" >
+            android:layout_height="50dp">
 
             <TextView
-                android:id="@+id/cancel"
+                android:id="@+id/tv_cancle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
@@ -26,11 +27,12 @@
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
                 android:paddingTop="5dp"
+
                 android:text="取消"
-                android:textColor="@color/color_ffffff" />
+                android:textColor="#ffffff"/>
 
             <TextView
-                android:id="@+id/sure"
+                android:id="@+id/tv_ensure"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -42,49 +44,51 @@
                 android:paddingRight="10dp"
                 android:paddingTop="5dp"
                 android:text="确定"
-                android:textColor="@color/color_ffffff" />
+                android:textColor="#ffffff"/>
 
             <TextView
-                android:id="@+id/tv_time"
+                android:id="@+id/tv_pop_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:text="用车时间"
-                android:textColor="@color/main_title_wrod_color"
-                android:textSize="16sp" />
+                android:textSize="16sp"/>
         </RelativeLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1px"
-            android:background="#e3e1de" />
+            android:background="#e3e1de"/>
 
-        <View
+        <RelativeLayout
+            android:id="@+id/timePicker1"
             android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:background="#fcfcfc" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:orientation="horizontal" >
+            android:layout_gravity="center"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="20dp">
 
             <com.ui.component.wheelview.WheelView
-                android:id="@+id/day_wheel"
-                android:layout_width="100dip"
-                android:layout_height="wrap_content" />
+                android:id="@+id/year"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_toStartOf="@+id/hour"/>
+
 
             <com.ui.component.wheelview.WheelView
-                android:id="@+id/hour_wheel"
-                android:layout_width="100dip"
-                android:layout_height="wrap_content" />
+                android:id="@+id/hour"
+                android:layout_width="90dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_toStartOf="@+id/mins"/>
 
             <com.ui.component.wheelview.WheelView
-                android:id="@+id/min_wheel"
-                android:layout_width="100dip"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
+                android:id="@+id/mins"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"/>
+        </RelativeLayout>
     </LinearLayout>
-
-</RelativeLayout>
+</LinearLayout>

@@ -9,6 +9,7 @@ import android.support.annotation.RequiresApi;
 
 import com.base.util.ActivityCollector;
 import com.base.util.LogUtils;
+import com.base.util.SpUtil;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 import com.tencent.bugly.crashreport.CrashReport;
@@ -108,5 +109,22 @@ public class App extends Application {
             return;
         }
         LeakCanary.install(this);
+    }
+
+
+    public static void saveUserInfo(String token, String userName, String userNickName,
+                                    String userPhone, String userId,
+                                    String userHeadImg) {
+        if (userName == null) {
+            userName = "";
+        }
+        LogUtils.d("saveUserInfo：" + userName + userPhone);
+        SpUtil.putAndApply(getAppContext(), "token", token);
+        SpUtil.putAndApply(getAppContext(), "userId", userId);
+        SpUtil.putAndApply(getAppContext(), "userName", userName);
+        SpUtil.putAndApply(getAppContext(), "userNickName", userNickName);
+        SpUtil.putAndApply(getAppContext(), "userPhone", userPhone);
+        SpUtil.putAndApply(getAppContext(), "userHeadImg", userHeadImg);
+
     }
 }

@@ -7,12 +7,13 @@
         android:id="@+id/iv_shadow"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/header"
-        android:background="@color/theme_black_7f" />
+        android:background="@color/theme_black_7f"
+        android:src="@drawable/header"/>
 
     <com.view.widget.SwipeBackLayout
         android:id="@+id/swipeBackLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"/>
 
+    <include layout="@layout/header_toolbar"/>
 </RelativeLayout>

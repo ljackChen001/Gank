@@ -1,135 +1,370 @@
 package com.base.util;
 
 import android.annotation.SuppressLint;
+import android.text.format.Time;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class TimeUtils {
 
-    public static final SimpleDateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    public static final SimpleDateFormat DATE_FORMAT_DATE = new SimpleDateFormat("yyyy-MM-dd");
 
-    private TimeUtils() {
-        throw new AssertionError();
-    }
+    private static SimpleDateFormat sf = null;
+    private long diff;
 
     /**
-     * long time to string
+     * 获取当前时间
      *
-     * @param timeInMillis timeInMillis
-     * @param dateFormat   dateFormat
-     * @return String
+     * @return
      */
-    public static String getTime(long timeInMillis, SimpleDateFormat dateFormat) {
-        return dateFormat.format(new Date(timeInMillis));
+    public static String getNowTime() {
+        String timeString = null;
+        Time time = new Time();
+        time.setToNow();
+        String year = thanTen(time.year);
+        String month = thanTen(time.month + 1);
+        String monthDay = thanTen(time.monthDay);
+        String hour = thanTen(time.hour);
+        String minute = thanTen(time.minute);
+
+        timeString = year + "-" + month + "-" + monthDay + " " + hour + ":"
+                + minute;
+        // System.out.println("-------timeString----------" + timeString);
+        return timeString;
     }
 
-    /**
-     * long time to string, format is {@link #DEFAULT_DATE_FORMAT}
-     *
-     * @param timeInMillis time
-     * @return String
-     */
-    public static String getTime(long timeInMillis) {
-        return getTime(timeInMillis, DEFAULT_DATE_FORMAT);
-    }
+    public static int calculate(int year, int month) {
 
-    /**
-     * get current time in milliseconds
-     *
-     * @return long
-     */
-    public static long getCurrentTimeInLong() {
-        return System.currentTimeMillis();
-    }
-
-    /**
-     * get current time in milliseconds, format is {@link #DEFAULT_DATE_FORMAT}
-     *
-     * @return String
-     */
-    public static String getCurrentTimeInString() {
-        return getTime(getCurrentTimeInLong());
-    }
-
-    /**
-     * get current time in milliseconds
-     *
-     * @param dateFormat dateFormat
-     * @return String
-     */
-    public static String getCurrentTimeInString(SimpleDateFormat dateFormat) {
-
-        return getTime(getCurrentTimeInLong(), dateFormat);
-    }
-
-    /**
-     * get current time in milliseconds
-     *
-     * @return long
-     */
-    public static int getWeekOfDate(long time) {
-
-        Date date = new Date(time);
-        // String[] weekDays = { "星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"
-        // };
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        @SuppressLint("WrongConstant") int w = cal.get(Calendar.DAY_OF_WEEK) - 1;
-        if (w < 0)
-            w = 0;
-
-        return w;
-    }
-
-    public static String getWeekString(long time) {
-        int week = getWeekOfDate(time);
-        String value = "";
-        switch (week) {
-            case 0:
-                value = "周日";
-                break;
-            case 1:
-                value = "周一";
-                break;
-            case 2:
-                value = "周二";
-                break;
-            case 3:
-                value = "周三";
-                break;
-            case 4:
-                value = "周四";
-                break;
-            case 5:
-                value = "周五";
-                break;
-            case 6:
-                value = "周六";
-                break;
+        boolean yearleap = judge(year);
+        int day;
+        if (yearleap && month == 2) {
+            day = 29;
+        } else if (!yearleap && month == 2) {
+            day = 28;
+        } else if (month == 4 || month == 6 || month == 9 || month == 11) {
+            day = 30;
+        } else {
+            day = 31;
         }
-        return value;
+        return day;
     }
-    /*将字符串转为时间戳*/
+
+    public static boolean judge(int year) {
+        boolean yearleap = (year % 400 == 0) || (year % 4 == 0)
+                && (year % 100 != 0);// 采用布尔数据计算判断是否能整除
+        return yearleap;
+    }
+
+    /**
+     * 十一下加零
+     *
+     * @param str
+     * @return
+     */
+    public static String thanTen(int str) {
+
+        String string = null;
+
+        if (str < 10) {
+            string = "0" + str;
+        } else {
+
+            string = "" + str;
+
+        }
+        return string;
+    }
+
+    /**
+     * 计算时间差
+     *
+     * @param starTime 开始时间
+     * @param endTime  结束时间
+     *                 返回类型 ==1----天，时，分。 ==2----时
+     * @return 返回时间差
+     */
     @SuppressLint("SimpleDateFormat")
-    public static long getStringToDate(String time) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        Date date = new Date();
-        try{
-            date = formatter.parse(time);
-        } catch(ParseException e) {
+    public static String getTimeDifference(String starTime, String endTime) {
+        String timeString = "";
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+        try {
+            Date parse = dateFormat.parse(starTime);
+            Date parse1 = dateFormat.parse(endTime);
+
+            long diff = parse1.getTime() - parse.getTime();
+
+            long day = diff / (24 * 60 * 60 * 1000);
+            long hour = (diff / (60 * 60 * 1000) - day * 24);
+            long min = ((diff / (60 * 1000)) - day * 24 * 60 - hour * 60);
+            long s = (diff / 1000 - day * 24 * 60 * 60 - hour * 60 * 60 - min * 60);
+            long ms = (diff - day * 24 * 60 * 60 * 1000 - hour * 60 * 60 * 1000
+                    - min * 60 * 1000 - s * 1000);
+            // System.out.println(day + "天" + hour + "小时" + min + "分" + s +
+            // "秒");
+            long hour1 = diff / (60 * 60 * 1000);
+            String hourString = hour1 + "";
+            long min1 = ((diff / (60 * 1000)) - hour1 * 60);
+            timeString = hour1 + "小时" + min1 + "分";
+            // System.out.println(day + "天" + hour + "小时" + min + "分" + s +
+            // "秒");
+
+        } catch (ParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return date.getTime();
+        return timeString;
+
     }
 
+    /**
+     * 计算相差的小时
+     *
+     * @param starTime
+     * @param endTime
+     * @return
+     */
+    public static String getTimeDifferenceHour(String starTime, String endTime) {
+        String timeString = "";
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+        try {
+            Date parse = dateFormat.parse(starTime);
+            Date parse1 = dateFormat.parse(endTime);
+
+            long diff = parse1.getTime() - parse.getTime();
+            String string = Long.toString(diff);
+
+            float parseFloat = Float.parseFloat(string);
+
+            float hour1 = parseFloat / (60 * 60 * 1000);
+
+            timeString = Float.toString(hour1);
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return timeString;
+
+    }
+
+    /**
+     * 获取时间中的某一个时间点
+     *
+     * @param str
+     * @param type
+     * @return
+     */
+    public static String getJsonParseShiJian(String str, int type) {
+        String shijanString = null;
+        String nian = str.substring(0, str.indexOf("-"));
+        String yue = str.substring(str.indexOf("-") + 1, str.lastIndexOf("-"));
+        String tian = str.substring(str.lastIndexOf("-") + 1, str.indexOf(" "));
+        String shi = str.substring(str.indexOf(" ") + 1, str.lastIndexOf(":"));
+        String fen = str.substring(str.lastIndexOf(":") + 1, str.length());
+
+        switch (type) {
+            case 1:
+                shijanString = nian;
+                break;
+            case 2:
+                shijanString = yue;
+                break;
+            case 3:
+                shijanString = tian;
+                break;
+            case 4:
+                shijanString = shi;
+                break;
+            case 5:
+                shijanString = fen;
+                break;
+
+        }
+        return shijanString;
+    }
+
+    /**
+     * Sring变int
+     *
+     * @param str
+     * @return
+     */
+    public static int strToInt(String str) {
+        int value = 0;
+        value = Integer.parseInt(str);
+        return value;
+    }
+
+    /**
+     * 与当前时间比较早晚
+     *
+     * @param time 需要比较的时间
+     * @return 输入的时间比现在时间晚则返回true
+     */
+    public static boolean compareNowTime(String time) {
+        boolean isDayu = false;
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+        try {
+            Date parse = dateFormat.parse(time);
+            Date parse1 = dateFormat.parse(getNowTime());
+
+            long diff = parse1.getTime() - parse.getTime();
+            if (diff <= 0) {
+                isDayu = true;
+            } else {
+                isDayu = false;
+            }
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return isDayu;
+    }
+
+    /**
+     * 把时间戳变yyyy-MM-dd HH:mm格式时间
+     *
+     * @param time
+     * @return
+     */
+    public static String getDateToString(long time) {
+        Date d = new Date(time);
+        sf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        return sf.format(d);
+    }
+
+    /**
+     * 返回时间戳
+     *
+     * @param time
+     * @return
+     */
+    public static long dataOne(String time) {
+        SimpleDateFormat sdr = new SimpleDateFormat("yyyy-MM-dd HH:mm",
+                Locale.CHINA);
+        Date date;
+        long l = 0;
+        try {
+            date = sdr.parse(time);
+            l = date.getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return l;
+    }
+
+    /**
+     * 比较两个时间
+     *
+     * @param starTime  开始时间
+     * @param endString 结束时间
+     * @return 结束时间大于开始时间返回true，否则反之֮
+     */
+    public static boolean compareTwoTime(String starTime, String endString) {
+        boolean isDayu = false;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        try {
+            Date parse = dateFormat.parse(starTime);
+            Date parse1 = dateFormat.parse(endString);
+
+            long diff = parse1.getTime() - parse.getTime();
+            if (diff >= 0) {
+                isDayu = true;
+            } else {
+                isDayu = false;
+            }
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return isDayu;
+
+    }
+
+    public static boolean compareTwoTime2(String starTime, String endString, long diffTime) {
+        boolean isDayu = false;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+        try {
+            Date parse = dateFormat.parse(starTime);
+            Date parse1 = dateFormat.parse(endString);
+
+            long diff = parse1.getTime() - parse.getTime();
+            LogUtils.d(diff + ":diff");
+            if (diff >= diffTime) {//2个小时
+                isDayu = true;
+            } else {
+                isDayu = false;
+            }
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return isDayu;
+
+    }
+
+    public static long compareTwoTime2(String starTime, String endString) {
+        //        boolean isDayu = false;
+        long diff = 0;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+        try {
+            Date parse = dateFormat.parse(starTime);
+            Date parse1 = dateFormat.parse(endString);
+
+            diff = parse1.getTime() - parse.getTime();
+            //            if (diff >= diffTime) {//2个小时
+            //                isDayu = true;
+            //            } else {
+            //                isDayu = false;
+            //            }
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return diff;
+
+    }
+
+    /**
+     * 获取年
+     *
+     * @param time
+     * @return
+     */
+    public static String getTimeYear(String time) {
+
+        String substring = time.substring(0, time.lastIndexOf(" "));
+        return substring;
+
+    }
+
+    /**
+     * 换算小时，0.5小时-->0小时30分
+     *
+     * @param hour
+     * @return
+     */
+    private static String convertTime(String hour) {
+
+        String substring = hour.substring(0, hour.lastIndexOf("."));
+        String substring2 = hour.substring(hour.lastIndexOf(".") + 1,
+                hour.length());
+        substring2 = "0." + substring2;
+        float f2 = Float.parseFloat(substring2);
+        f2 = f2 * 60;
+        String string = Float.toString(f2);
+        String min = string.substring(0, string.lastIndexOf("."));
+        return substring + "小时" + min + "分";
 
 
-//    public static String getCompareDate(String year){
-//
-//    }
+    }
 }

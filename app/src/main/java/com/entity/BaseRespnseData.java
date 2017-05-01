@@ -1,14 +1,16 @@
 package com.entity;
 
-import java.io.Serializable;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by chenbaolin on 2017/4/26.
  */
 
-public class BaseRespnseData<T> implements Serializable{
+public class BaseRespnseData<T>{
+    @SerializedName("tokenStr")
     private String tokenStr;
-    private T appUser;
+    @SerializedName("appUser")
+    private UserInfo appUser;
 
     public String getTokenStr() {
         return tokenStr;
@@ -18,11 +20,11 @@ public class BaseRespnseData<T> implements Serializable{
         return this;
     }
 
-    public T getAppUser() {
+    public UserInfo getAppUser() {
         return appUser;
     }
 
-    public BaseRespnseData setAppUser(T appUser) {
+    public BaseRespnseData setAppUser(UserInfo appUser) {
         this.appUser = appUser;
         return this;
     }

@@ -1,9 +1,10 @@
 package com.ui;
 
+import com.api.RentalCar;
 import com.base.BaseModel;
 import com.base.BasePresenter;
 import com.base.BaseView;
-import com.model.Gank;
+import com.entity.BaseRespnseData;
 
 import io.reactivex.Flowable;
 
@@ -15,20 +16,18 @@ public interface MainContract {
 
     interface View extends BaseView {
 
-        void showDialog();
-        void onSucceed(Gank data);
+        void onSucceed(Object data);
 
         void onFail(String err);
 
-        void hideDialog();
-
     }
-
     interface Model extends BaseModel {
-        Flowable<Gank> getGankData();
+        Flowable<BaseRespnseData<RentalCar>> getMyCollectCars();
     }
 
     abstract class Presenter extends BasePresenter<BaseView, Model> {
-        public abstract void getGankData();
+
+        public abstract  void getMyCollectCars();
+
     }
 }

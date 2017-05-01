@@ -17,8 +17,8 @@
         android:layout_height="match_parent"
         android:layout_marginBottom="5dp"
         android:layout_marginLeft="10dp"
-        android:visibility="gone"
-        android:src="@drawable/ic_main_left"/>
+        android:src="@drawable/ic_main_left"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/tool_content"

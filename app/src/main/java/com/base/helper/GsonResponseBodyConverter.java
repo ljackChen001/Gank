@@ -1,5 +1,6 @@
 package com.base.helper;
 
+import com.base.exception.APIException;
 import com.base.util.LogUtils;
 import com.entity.HttpResult;
 import com.google.gson.Gson;
@@ -36,14 +37,16 @@ final class GsonResponseBodyConverter<T> implements Converter<ResponseBody, T> {
     public T convert(ResponseBody value) throws IOException {
         String response = value.string();
         HttpResult httpResult = gson.fromJson(response, HttpResult.class);
-        LogUtils.d(httpResult.getResponseCode()+"---------------");
-        if (!httpResult.isTokenInvalid()) {
-            LogUtils.d("!httpResult.isTokenInvalid()");
+        LogUtils.d(httpResult.getResponseCode() + "---------------");
+        LogUtils.d(httpResult.getResponseDescription() + "：：HttpResult");
+        if (httpResult.isTokenInvalid()) {
             value.close();
             try {
                 throw new APIException(httpResult.getResponseCode(), httpResult.getResponseDescription());
             } catch (APIException e) {
                 e.printStackTrace();
+            } finally {
+                value.close();
             }
         }
 
@@ -59,4 +62,5 @@ final class GsonResponseBodyConverter<T> implements Converter<ResponseBody, T> {
             value.close();
         }
     }
+
 }

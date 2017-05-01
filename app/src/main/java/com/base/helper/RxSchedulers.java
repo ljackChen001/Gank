@@ -1,5 +1,7 @@
 package com.base.helper;
 
+import com.base.exception.RxException;
+
 import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
 import io.reactivex.Observable;
