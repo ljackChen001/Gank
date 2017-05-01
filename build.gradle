@@ -19,6 +19,7 @@ allprojects {
         jcenter()
         //国内镜像
         jcenter(){url 'http://jcenter.bintray.com/'}
+        maven { url "https://jitpack.io" }
         mavenCentral()
     }
 }

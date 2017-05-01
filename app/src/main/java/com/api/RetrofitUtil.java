@@ -2,10 +2,12 @@ package com.api;
 
 import com.App;
 import com.Constants;
-import com.base.helper.APIException;
+import com.base.exception.APIException;
+import com.base.helper.GsonConverterFactory;
 import com.base.helper.RxSchedulers;
 import com.base.util.LogUtils;
 import com.base.util.NetWorkUtil;
+import com.base.util.SpUtil;
 import com.entity.HttpResult;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -57,27 +59,15 @@ public class RetrofitUtil {
 
     }
 
-    /**
-     * 统一的请求头
-     */
     Interceptor headInterceptor = (chain) -> chain.proceed(chain.request().newBuilder()
             .addHeader("appkeyId", "1234")
             .addHeader("Content-Type", "application/json")
             .build());
+    BasicParamsInterceptor interceptor = new BasicParamsInterceptor.Builder()
+            //            .addHeaderParam("device_id", DeviceUtils.getDeviceId())
+            .addQueryParam("token", SpUtil.get(App.getAppContext(), "token", "").toString())
+            .build();
 
-    /**
-     * 让所有网络请求都附上token
-     */
-    //    Interceptor mTokenInterceptor = chain -> {
-    //        Request originalRequest = chain.request();
-    //        if (Your.sToken == null || alreadyHasAuthorizationHeader(originalRequest)) {
-    //            return chain.proceed(originalRequest);
-    //        }
-    //        Request authorised = originalRequest.newBuilder()
-    //                .header("Authorization", Your.sToken)
-    //                .build();
-    //        return chain.proceed(authorised);
-    //    };
     //静态内部类,保证单例并在调用getRetrofit方法的时候才去创建.
     private RetrofitUtil() {
         // 可以通过实现 Logger 接口更改日志保存位置
@@ -88,7 +78,7 @@ public class RetrofitUtil {
         Cache cache = new Cache(httpCacheDirectory, 1024 * 1024 * 100); //100Mb
 
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .addInterceptor(headInterceptor)
+                .addInterceptor(interceptor)
                 .addInterceptor(new ChuckInterceptor(App.getAppContext()))
                 .addInterceptor(loggingInterceptor)
                 .addNetworkInterceptor(new HttpCacheInterceptor())//添加自定义缓存拦截器
@@ -104,7 +94,7 @@ public class RetrofitUtil {
         retrofit = new Retrofit.Builder()
                 .client(okHttpClient)//把OkHttpClient添加进来
                 //.addConverterFactory(GsonConverterFactory.create(gson))
-                .addConverterFactory(retrofit2.converter.gson.GsonConverterFactory.create(gson))
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .baseUrl(Constants.BASE_URL)
                 .build();
