@@ -22,17 +22,20 @@
         <activity
             android:name="com.ui.MainActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTop"
-            android:theme="@style/AppTheme.NoActionBar"> 87777
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name="com.ui.login.LoginActivity"
+        <activity
+            android:name="com.ui.login.LoginActivity"
             android:launchMode="singleTask"/>
-        <activity android:name="com.ui.component.cityselect.PickCityActivity" />
+        <activity android:name="com.ui.component.cityselect.PickCityActivity"/>
+        <activity android:name="com.ui.chooseCar.ChooseCarActivity">
+        </activity>
     </application>
 
 </manifest>

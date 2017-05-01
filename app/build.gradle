@@ -17,9 +17,6 @@ android {
             abiFilters 'armeabi-v7a' //,'armeabi', 'x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a'
         }
         vectorDrawables.useSupportLibrary = true
-        jackOptions{
-
-        }
     }
     buildTypes {
         release {
@@ -28,8 +25,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        android.compileOptions.sourceCompatibility 1.8
+        android.compileOptions.targetCompatibility 1.8
     }
 //    dataBinding {
 //        enabled true
@@ -73,8 +70,7 @@ dependencies {
 
     compile 'com.youth.banner:banner:1.4.9'
     compile 'me.yokeyword:indexablerecyclerview:1.2.3'
-//    compile 'com.jzxiang.pickerview:TimePickerDialog:1.0.1'
-
+    compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.15'
     /*** OkHttp客户端HTTP检查器*/
     debugCompile 'com.readystatesoftware.chuck:library:1.0.0'
     releaseCompile 'com.readystatesoftware.chuck:library-no-op:1.0.0'
