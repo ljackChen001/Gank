@@ -33,7 +33,7 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActivityCollector.getInstance().addActivity(new WeakReference<>(this));
+//        ActivityCollector.getInstance().addActivity(new WeakReference<>(this));
         mContext = this;
         View rootView = getLayoutInflater().inflate(this.setLayoutResouceId(), null, false);
         setContentView(setLayoutResouceId(), rootView);

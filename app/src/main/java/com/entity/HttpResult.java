@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 public class HttpResult<T> implements Serializable {
     @SerializedName("responseCode")
-    private int responseCode;//状态吗
+    private int responseCode;//状态码
     @SerializedName("responseDescription")
     private String responseDescription;//返回的提示消息
     @SerializedName("responseData")

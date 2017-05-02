@@ -14,6 +14,7 @@ import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 import com.tencent.bugly.crashreport.CrashReport;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
 import io.realm.Realm;
@@ -50,7 +51,7 @@ public class App extends Application {
         @Override
         public void onActivityCreated(Activity activity, Bundle bundle) {
             LogUtils.e("====>>", activity + "onActivityCreated");
-            ActivityCollector.getInstance().addActivity(activity);
+            ActivityCollector.getInstance().addActivity(new WeakReference<>(activity));
         }
 
         @Override
@@ -81,7 +82,7 @@ public class App extends Application {
         @Override
         public void onActivityDestroyed(Activity activity) {
             LogUtils.e("====>>", activity + "onActivityDestroyed");
-            ActivityCollector.getInstance().finishActivity(activity);
+            ActivityCollector.getInstance().removeActivity(new WeakReference<>(activity));
 
             StringBuilder builder = new StringBuilder();
             builder.append("栈内剩余：");

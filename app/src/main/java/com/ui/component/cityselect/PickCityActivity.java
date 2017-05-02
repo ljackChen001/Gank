@@ -13,6 +13,7 @@ import com.base.util.ActivityCollector;
 import com.base.util.ToastUtil;
 import com.ui.gank.R;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -40,7 +41,7 @@ public class PickCityActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActivityCollector.getInstance().addActivity(this);
+        ActivityCollector.getInstance().addActivity(new WeakReference<>(this));
         setContentView(R.layout.activity_pick_city);
         unbinder = ButterKnife.bind(this);
         initAppBarTool();
@@ -118,16 +119,16 @@ public class PickCityActivity extends AppCompatActivity {
         //        getSupportActionBar().setTitle("选择城市");
     }
 
-//    // 更新数据点击事件
-//    public void update(View view) {
-//        List<CityEntity> list = new ArrayList<>();
-//        list.add(new CityEntity("杭州市"));
-//        list.add(new CityEntity("北京市"));
-//        list.add(new CityEntity("上海市"));
-//        list.add(new CityEntity("广州市"));
-//        mHotCityAdapter.addDatas(list);
-//        Toast.makeText(this, "更新数据", Toast.LENGTH_SHORT).show();
-//    }
+    //    // 更新数据点击事件
+    //    public void update(View view) {
+    //        List<CityEntity> list = new ArrayList<>();
+    //        list.add(new CityEntity("杭州市"));
+    //        list.add(new CityEntity("北京市"));
+    //        list.add(new CityEntity("上海市"));
+    //        list.add(new CityEntity("广州市"));
+    //        mHotCityAdapter.addDatas(list);
+    //        Toast.makeText(this, "更新数据", Toast.LENGTH_SHORT).show();
+    //    }
 
     private List<CityEntity> initDatas() {
         List<CityEntity> list = new ArrayList<>();
@@ -197,6 +198,6 @@ public class PickCityActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         unbinder.unbind();
-        ActivityCollector.getInstance().finishActivity();
+        ActivityCollector.getInstance().removeActivity(new WeakReference<>(this));
     }
 }

@@ -22,10 +22,8 @@ public interface LoginContrat {
     interface Model extends BaseModel {
         Flowable<HttpResult<BaseRespnseData>> login(String userPhone, String time, String appkeyId, String deviceToken,
                                                               String ip, String source, String verificationResponseCode, String additional);
-
         Observable<HttpResult> sendCode(String userPhone, String codeType);
     }
-
     abstract class Presenter extends BasePresenter<LoginContrat.View, LoginContrat.Model> {
         public abstract void login(String userPhone, String code);
         public abstract void sendeCode(String userPhone);

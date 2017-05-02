@@ -1,10 +1,12 @@
 package com.ui.chooseCar;
 
+import android.os.Bundle;
+
 import com.base.BaseActivity;
 import com.base.BasePresenter;
 import com.ui.gank.R;
 
-public class ChooseCarActivity extends BaseActivity {
+public  class ChooseCarActivity extends BaseActivity {
 
 
     @Override
@@ -20,5 +22,10 @@ public class ChooseCarActivity extends BaseActivity {
     @Override
     protected BasePresenter onCreatePresenter() {
         return null;
+    }
+
+    @Override
+    protected void getBundleExtras(Bundle extras) {
+
     }
 }

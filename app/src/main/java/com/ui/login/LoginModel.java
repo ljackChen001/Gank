@@ -19,14 +19,7 @@ public class LoginModel implements LoginContrat.Model {
     public Flowable <HttpResult<BaseRespnseData>> login(String userPhone, String time, String appkeyId, String
             deviceToken, String ip, String source, String verificationResponseCode, String additional) {
         return RetrofitUtil.getInstance().getApiService()
-                .login(userPhone,
-                        time,
-                        appkeyId,
-                        deviceToken,
-                        ip,
-                        source,
-                        verificationResponseCode,
-                        additional)
+                .login(userPhone, time, appkeyId, deviceToken, ip, source, verificationResponseCode, additional)
                 .compose(RxSchedulers.io_main_flowable());
     }
 
