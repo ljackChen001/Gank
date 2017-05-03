@@ -7,4 +7,25 @@
     android:layout_height="match_parent"
     tools:context="com.ui.chooseCar.ChooseCarActivity">
 
+    <include
+        android:id="@+id/include2"
+        layout="@layout/header_toolbar"/>
+
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="0dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/include2"
+        app:tabBackground="@color/color_ffffff"
+        app:tabIndicatorColor="@android:color/holo_orange_light"
+        app:tabSelectedTextColor="@android:color/holo_orange_light"
+        app:tabTextAppearance="@android:style/TextAppearance.Holo.Large"
+        app:tabTextColor="@color/colorPrimary">
+
+    </android.support.design.widget.TabLayout>
 </android.support.constraint.ConstraintLayout>

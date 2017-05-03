@@ -39,7 +39,7 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
         setContentView(setLayoutResouceId(), rootView);
         unbinder = ButterKnife.bind(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            StatusBarUtil.setColor(this, getResources().getColor(R.color.color_48b54c), 0);
+            StatusBarUtil.setColor(this, getResources().getColor(R.color.color_48b54c), 50);
         }
         Bundle extras = getIntent().getExtras();
         if (null != extras) {

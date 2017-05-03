@@ -5,7 +5,9 @@ import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
@@ -29,6 +31,7 @@ import android.widget.TextView;
 
 import com.App;
 import com.adapter.DrawerAdapter;
+import com.base.ActivityStartUtils;
 import com.base.BaseActivity;
 import com.base.helper.RxBus;
 import com.base.util.ActivityCollector;
@@ -39,6 +42,7 @@ import com.base.util.StatusBarUtil;
 import com.base.util.TimeUtils;
 import com.entity.UserInfo;
 import com.jakewharton.rxbinding2.view.RxView;
+import com.ui.chooseCar.ChooseCarActivity;
 import com.ui.component.cityselect.PickCityActivity;
 import com.ui.component.wheelview.DateUtils;
 import com.ui.component.wheelview.JudgeDate;
@@ -109,7 +113,16 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            StatusBarUtil.setTranslucentForDrawerLayout(this, drawerlayout, 50);
+        }
+    }
+
+    @Override
     public void initView() {
+
         StatusBarUtil.setColorNoTranslucentForDrawerLayout
                 (this, drawerlayout, getResources().getColor(R.color.color_48b54c));
         rxBus = RxBus.getInstance();
@@ -125,13 +138,13 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
                 //                mPresenter.getMyCollectCars();
                 LogUtils.d(SpUtil.get(App.getAppContext(), "token", "") + "");
                 //                LogUtils.d(SpUtil.get(App.getAppContext(), "userPhone", "") + "'");
-
                 if (SpUtil.contains(App.getAppContext(), "userInfo")) {
                     UserInfo userInfo = SpUtil.get(App.getAppContext(), "userInfo", UserInfo
                             .class);
                     LogUtils.d("userInfo" + userInfo.getUserMobile() + "---" + userInfo.getUserCreateTime() + userInfo
                             .getUserName());
                 }
+                ActivityStartUtils.getInstance().readyGo(ChooseCarActivity.class);
             }
         });
 
