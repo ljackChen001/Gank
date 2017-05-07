@@ -5,7 +5,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.base.helper.RxBus;
 import com.base.util.ActivityCollector;
@@ -24,18 +29,23 @@ import butterknife.Unbinder;
  */
 
 public abstract class BaseActivity<P extends BasePresenter> extends AppCompatActivity {
-    private String TAG = this.getClass().getSimpleName();
+
     public P mPresenter;
     public Unbinder unbinder;
     public RxBus rxBus;
     public Context mContext;
+    private String TAG = this.getClass().getSimpleName();
+    protected Toolbar toolbar;
+    protected TextView tvTitle;
+    public int menuResId;
+    public String menuStr;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        ActivityCollector.getInstance().addActivity(new WeakReference<>(this));
+        //        ActivityCollector.getInstance().addActivity(new WeakReference<>(this));
         mContext = this;
-        View rootView = getLayoutInflater().inflate(this.setLayoutResouceId(), null, false);
+        View rootView = getLayoutInflater().inflate(setLayoutResouceId(), null, false);
         setContentView(setLayoutResouceId(), rootView);
         unbinder = ButterKnife.bind(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -48,8 +58,20 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
         if (onCreatePresenter() != null) {
             mPresenter = onCreatePresenter();
         }
+        initTool();
+        initToolBar();
         initView();
         LogUtils.d("生命周期：" + TAG + "==>>onCreate");
+    }
+
+    private void initTool() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        tvTitle = (TextView) findViewById(R.id.tool_content);
+        if (toolbar != null) {
+            toolbar.setTitle("");
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        }
     }
 
 
@@ -70,11 +92,86 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
         return container;
     }
 
+    OnClickListener onClickListenerTopLeft;
+    OnClickListener onClickListenerTopRight;
+
+    public interface OnClickListener {
+        void onClick();
+    }
+
+    /**
+     * 设置ToolBar中间文字
+     *
+     * @param title
+     */
+    protected void setTitle(String title) {
+        if (!TextUtils.isEmpty(title)) {
+            tvTitle.setText(title);
+        }
+    }
+
+    /**
+     * ToolBar左边按钮
+     */
+    protected void setTopLeftButton() {
+        setTopLeftButton(R.drawable.ic_main_left, null);
+    }
+
+    protected void setTopLeftButton(int iconResId, OnClickListener onClickListener) {
+        toolbar.setNavigationIcon(iconResId);
+        this.onClickListenerTopLeft = onClickListener;
+    }
+
+    protected void setTopRightButton(String menuStr, OnClickListener onClickListener) {
+        this.onClickListenerTopRight = onClickListener;
+        this.menuStr = menuStr;
+    }
+
+    protected void setTopRightButton(String menuStr, int menuResId, OnClickListener onClickListener) {
+        this.menuResId = menuResId;
+        this.menuStr = menuStr;
+        this.onClickListenerTopRight = onClickListener;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (menuResId != 0 || !TextUtils.isEmpty(menuStr)) {
+            getMenuInflater().inflate(R.menu.menu_activity_base_top_bar, menu);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (menuResId != 0) {
+            menu.findItem(R.id.menu_1).setIcon(menuResId);
+        }
+        if (!TextUtils.isEmpty(menuStr)) {
+            menu.findItem(R.id.menu_1).setTitle(menuStr);
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onClickListenerTopLeft.onClick();
+        } else if (item.getItemId() == R.id.menu_1) {
+            onClickListenerTopRight.onClick();
+        }
+
+        return true; // true 告诉系统我们自己处理了点击事件
+    }
+
+
     protected abstract int setLayoutResouceId();
+
     /**
      * 初始化view
      */
     protected abstract void initView();
+
+    protected abstract void initToolBar();
 
     protected abstract P onCreatePresenter();
 
@@ -85,35 +182,11 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
      */
     protected abstract void getBundleExtras(Bundle extras);
 
-    //    protected void initTitle() {
-    //        title = (TextView) findViewById(R.id.toolbar_title);
-    //        back = (ImageView) findViewById(R.id.toolbar_back);
-    //        iv_menu = (ImageView) findViewById(R.id.toolbar_iv_menu);
-    //        tv_menu = (TextView) findViewById(R.id.toolbar_tv_menu);
-    //        if (null != back) {
-    //            back.setOnClickListener(new View.OnClickListener() {
-    //                @Override
-    //                public void onClick(View v) {
-    //                    finish();
-    //                }
-    //            });
-    //        }
-    //    }
-    //
-    //    public void setTitle(String string) {
-    //        if (null != title)
-    //            title.setText(string);
-    //    }
-    //
-    //    public void setTitle(int id) {
-    //        if (null != title)
-    //            title.setText(id);
-    //    }
-
     @Override
     protected void onStart() {
         super.onStart();
         LogUtils.d("生命周期：" + TAG + "==>>onStart");
+
     }
 
     @Override

@@ -1,11 +1,11 @@
 package com.ui.login;
 
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 
 import com.base.BaseActivity;
 import com.base.util.LogUtils;
@@ -29,7 +29,7 @@ import io.reactivex.Observable;
 
 public class LoginActivity extends BaseActivity<LoginPresenter> implements LoginContrat.View {
     @BindView(R.id.layout)
-    LinearLayout layout;
+    ConstraintLayout layout;
     @BindView(R.id.et_phone)
     EditText etPhone;
     @BindView(R.id.et_code)
@@ -43,6 +43,7 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
     public int setLayoutResouceId() {
         return R.layout.activity_login;
     }
+
 
     @Override
     public void initView() {
@@ -79,6 +80,11 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
                 });
         RxView.clicks(btnLogin).throttleFirst(5, TimeUnit.SECONDS)
                 .subscribe(o -> mPresenter.login(etPhone.getText().toString(), etCode.getText().toString()));
+    }
+
+    @Override
+    protected void initToolBar() {
+        setTitle("阿拉租车");
     }
 
     @Override
@@ -120,4 +126,6 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
     @Override
     public void hideDialog() {
     }
+
+
 }

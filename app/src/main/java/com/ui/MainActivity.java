@@ -14,7 +14,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -24,7 +23,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -65,20 +63,12 @@ import butterknife.BindView;
 import io.reactivex.functions.Consumer;
 
 public class MainActivity extends BaseActivity<MainPresenter> implements MainContract.View {
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
     @BindView(R.id.rv_drawer)
     RecyclerView rvDrawer;
     @BindView(R.id.drawerlayout)
     DrawerLayout drawerlayout;
     @BindView(R.id.rootlayout)
     CoordinatorLayout rootlayout;
-    @BindView(R.id.tool_left)
-    ImageView toolLeft;
-    @BindView(R.id.tool_content)
-    TextView toolContent;
-    @BindView(R.id.tool_right)
-    ImageView toolRight;
     @BindView(R.id.banner)
     Banner banner;
     @BindView(R.id.city_select_layout)
@@ -108,11 +98,6 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
 
 
     @Override
-    public int setLayoutResouceId() {
-        return R.layout.activity_main;
-    }
-
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -121,12 +106,35 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        banner.startAutoPlay();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        banner.stopAutoPlay();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        rxBus.clear();
+    }
+
+    @Override
+    public int setLayoutResouceId() {
+        return R.layout.activity_main;
+    }
+
+
+    @Override
     public void initView() {
 
         StatusBarUtil.setColorNoTranslucentForDrawerLayout
                 (this, drawerlayout, getResources().getColor(R.color.color_48b54c));
         rxBus = RxBus.getInstance();
-        initAppBarTool();
         initDrawer();
         initBanner();
         initListener();
@@ -220,23 +228,18 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
         //banner设置方法全部调用完毕时最后调用
         banner.start();
     }
-
-    /**
-     * 初始化AppBarTool
-     */
-    private void initAppBarTool() {
-        toolLeft.setVisibility(View.VISIBLE);
-        toolRight.setVisibility(View.VISIBLE);
-        toolLeft.setOnClickListener(v -> {
-            if (!drawerlayout.isDrawerOpen(Gravity.LEFT)) {
-                drawerlayout.openDrawer(Gravity.LEFT);
+    @Override
+    protected void initToolBar() {
+        setTitle("阿拉租车");
+        setTopLeftButton(R.drawable.ic_main_left, new OnClickListener() {
+            @Override
+            public void onClick() {
+                if (!drawerlayout.isDrawerOpen(Gravity.LEFT)) {
+                    drawerlayout.openDrawer(Gravity.LEFT);
+                }
             }
         });
-        toolRight.setOnClickListener(v -> {
-
-        });
     }
-
 
     /**
      * 抽屉初始化
@@ -401,24 +404,6 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
         lp.alpha = bgAlpha;
         getWindow().setAttributes(lp);
 
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        banner.startAutoPlay();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        banner.stopAutoPlay();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        rxBus.clear();
     }
 
     @Override

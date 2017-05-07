@@ -15,17 +15,26 @@ public class ChooseCarActivity extends BaseActivity {
     @BindView(R.id.tabLayout)
     TabLayout tabLayout;
 
+
     @Override
     public int setLayoutResouceId() {
         return R.layout.activity_choose_car;
     }
 
+
     @Override
     public void initView() {
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 1"));
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 2"));
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 3"));
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 4"));
+        tabLayout.addTab(tabLayout.newTab().setText("综合"));
+        tabLayout.addTab(tabLayout.newTab().setText("价格"));
+        tabLayout.addTab(tabLayout.newTab().setText("接单率"));
+        tabLayout.addTab(tabLayout.newTab().setText("筛选"));
+
+    }
+
+    @Override
+    protected void initToolBar() {
+        setTitle("选择车辆");
+
 
     }
 
@@ -38,4 +47,5 @@ public class ChooseCarActivity extends BaseActivity {
     protected void getBundleExtras(Bundle extras) {
 
     }
+
 }

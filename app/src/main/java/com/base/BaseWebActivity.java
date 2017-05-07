@@ -57,14 +57,21 @@ public class BaseWebActivity extends BaseActivity {
 
     protected WebView wv_web_view;
 
+
     @Override
     protected int setLayoutResouceId() {
         return R.layout.layout_web;
     }
 
+
     @Override
     protected void initView() {
         wv_web_view = (WebView) findViewById(R.id.wv_webview);
+    }
+
+    @Override
+    protected void initToolBar() {
+
     }
 
     @Override
